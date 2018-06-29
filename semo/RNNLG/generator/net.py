@@ -578,12 +578,14 @@ class Model(object):
             'mode'  :dict( [(name,eval(name)) for name in self.mode_vars]   ),
             'params':dict( [(name,eval(name)) for name in self.params_vars] )
         }
-        pk.dump(bundle, open(self.modelfile, 'wb'))
+        with open (self.modelfile, 'wb') as mf:
+            pk.dump(bundle, mf)
 
     def loadNet(self,parser,mode):
 
         print '\n\nloading net from file %s ... ' % self.modelfile
-        bundle = pk.load(open(self.modelfile, 'rb'))
+        with open(self.modelfile, 'rb') as mf:
+            bundle = pk.load(mf)
         # load learning variables from model
         # if adaptation, load from config file
         if mode=='adapt':

@@ -34,6 +34,13 @@ System Documentation
    NLGeneration
    Evaluation 
    TopicTracking
+
+--------------------
+
+.. toctree::
+   :maxdepth: 1
+
+   CEDM
    
 --------------------
 

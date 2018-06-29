@@ -2,7 +2,7 @@
 # PyDial: Multi-domain Statistical Spoken Dialogue System Software
 ###############################################################################
 #
-# Copyright 2015 - 2017
+# Copyright 2015 - 2018
 # Cambridge University Engineering Department Dialogue Systems Group
 #
 # 
@@ -21,18 +21,25 @@
 ###############################################################################
 
 '''
-ENACPolicy.py - Advantage Actor-Critic policy
+ENACPolicy.py - Episodic Natural Actor-Critic policy
 ==================================================
 
 Copyright CUED Dialogue Systems Group 2015 - 2017
+
+The implementation of episodic natural actor-critic. The vanilla gradients are computed in DRL/enac.py
+using Tensorflow and then the natural gradient is obtained through function train.
+You can turn on the importance sampling through the parameter ENACPolicy.importance_sampling
+
+The details of implementation can be found here: https://arxiv.org/abs/1707.00130
+
+See also:
+https://www.elen.ucl.ac.be/Proceedings/esann/esannpdf/es2007-125.pdf
+
 
 .. seealso:: CUED Imports/Dependencies: 
 
     import :class:`Policy`
     import :class:`utils.ContextLogger`
-
-.. warning::
-        Documentation not done.
 
 
 ************************

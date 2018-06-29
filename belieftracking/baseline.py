@@ -2,7 +2,7 @@
 # PyDial: Multi-domain Statistical Spoken Dialogue System Software
 ###############################################################################
 #
-# Copyright 2015 - 2017
+# Copyright 2015 - 2018
 # Cambridge University Engineering Department Dialogue Systems Group
 #
 # 
@@ -109,6 +109,11 @@ def labels(user_act, mact, lastInformedVenue):
                 
         
         if act["act"] == "inform" and slot != None:
+            if confirm_slots["explicit"]:
+                for s,v in confirm_slots["explicit"]:
+                    if slot == s and value != v:
+                        if s not in denied_goals or v not in denied_goals[s]:
+                            denied_goals[s].append(v)
             informed_goals[slot]=(value)
             
         elif act["act"] == "deny" and slot != None:

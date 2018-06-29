@@ -2,7 +2,7 @@
 # PyDial: Multi-domain Statistical Spoken Dialogue System Software
 ###############################################################################
 #
-# Copyright 2015 - 2017
+# Copyright 2015 - 2018
 # Cambridge University Engineering Department Dialogue Systems Group
 #
 # 
@@ -243,6 +243,13 @@ class EMLevenshteinConfusionModel(EMConfusionModel):
         self.nNewUserActs = len(self.newUserActs)
         self.type_confusions = self.get_confusion_distributions(self.newUserActs, offset=0.15)
         self.slot_confusions = self.get_confusion_distributions(Ontology.global_ontology.get_requestable_slots(self.domainString), offset=0.15)
+        for slot in self.slot_confusions:
+            if 'name' in self.slot_confusions[slot]['wlist']:
+                itemindices = np.where(self.slot_confusions[slot]['wlist']=='name')
+                self.slot_confusions[slot]['wlist'] = np.delete(self.slot_confusions[slot]['wlist'],itemindices[0])
+                self.slot_confusions[slot]['dist'] = np.delete(self.slot_confusions[slot]['dist'],itemindices[0])
+                self.slot_confusions[slot]['dist'] = self.slot_confusions[slot]['dist']/np.sum(self.slot_confusions[slot]['dist'])
+        
         self.slot_value_confusions = {}
         for slot in Ontology.global_ontology.get_system_requestable_slots(self.domainString) + [unicode('name')]:
             self.slot_value_confusions[slot] = self.get_confusion_distributions(

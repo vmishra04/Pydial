@@ -2,7 +2,7 @@
 # PyDial: Multi-domain Statistical Spoken Dialogue System Software
 ###############################################################################
 #
-# Copyright 2015 - 2017
+# Copyright 2015 - 2018
 # Cambridge University Engineering Department Dialogue Systems Group
 #
 # 
@@ -256,7 +256,7 @@ class UMHdcSim(UMSimulator.UMSimulator):
         """
         self.last_sys_act = sys_act
 
-        if goal.is_completed() and self.agenda.size() == 0 and sys_act.dact['act'] != 'reqmore'\
+        if goal.is_completed() and self.agenda.size() == 0 and sys_act.act != 'reqmore'\
                 and Settings.random.rand() < 0.85:
             # Goal already completed: say goodbye.
             self.agenda.clear()
@@ -1296,7 +1296,11 @@ class UMHdcSim(UMSimulator.UMSimulator):
         if not os.path.isfile(cfpath):
             cfpath = os.path.join(Settings.root,cfpath)
             if not os.path.isfile(cfpath):
-                logger.error('Error model config file "{}" does not exist'.format(cfpath))
+                logger.error('User model config file "{}" does not exist'.format(cfpath))
+            else:
+                logger.info("User model config file loaded: {}".format(os.path.abspath(cfpath)))
+        else:
+            logger.info("User model config file loaded: {}".format(os.path.abspath(cfpath)))
         return cfpath
     
     def _read_UM_config(self, config_file_path):

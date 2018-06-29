@@ -18,9 +18,6 @@ Simulation
 .. automodule:: usersimulator.ErrorModel
    :members:
         
-.. automodule:: usersimulator.ErrorSimulator
-   :members:
-   
 .. automodule:: usersimulator.NBestGenerator
    :members:
   

@@ -2,7 +2,7 @@
 # PyDial: Multi-domain Statistical Spoken Dialogue System Software
 ###############################################################################
 #
-# Copyright 2015 - 2017
+# Copyright 2015 - 2018
 # Cambridge University Engineering Department Dialogue Systems Group
 #
 # 
@@ -88,7 +88,7 @@ class DomainsErrorSimulator(object):
         logger.info('Confusion model: '+ self.confusionModelName)
 
         # Create confusion model.
-        self._set_confusion_model(domain_string)
+        self.confusionModel = self._load_confusion_model(domain_string)
 
         # Create N-best generator.
         self._set_nbest_generator()
@@ -96,14 +96,36 @@ class DomainsErrorSimulator(object):
         # Create Confidence scorer.
         self._set_confidence_scorer()
 
-    def _set_confusion_model(self, domain_string):
+    def _load_confusion_model(self, domainString):
+        '''
+        Loads and instantiates the respective confusion model object as configured in config file.
+        
+        Default is None.
+        
+        .. Note:
+            To dynamically load a class, the __init__() must take one argument: domainString.
+        
+        :param domainString: the domain the ontology will be loaded for.
+        :type domainString: str
+        :returns: None
+        '''
+        
         if self.confusionModelName == 'RandomConfusions':
-            self.confusionModel = ConfusionModel.EMRandomConfusionModel(domain_string)
+            return ConfusionModel.EMRandomConfusionModel(domainString)
         elif self.confusionModelName == 'LevenshteinConfusions':
-            self.confusionModel = ConfusionModel.EMLevenshteinConfusionModel(domain_string)
+            return ConfusionModel.EMLevenshteinConfusionModel(domainString)
         else:
-            logger.error('Confusion model '+self.confusionModelName+' is not implemented.')
-
+            try:
+                # try to view the config string as a complete module path to the class to be instantiated
+                components = self.confusionModelName.split('.')
+                packageString = '.'.join(components[:-1]) 
+                classString = components[-1]
+                mod = __import__(packageString, fromlist=[classString])
+                klass = getattr(mod, classString)
+                return klass(domainString)
+            except ImportError:
+                logger.error('Unknown domain ontology class "{}" for domain "{}"'.format(self.confusionModelName, domainString))
+    
     def _set_nbest_generator(self):
         if self.nBestGeneratorName == 'UniformNBestGenerator':
             self.nBestGenerator = NBestGenerator.EMNBestGenerator(self.confusionModel, self.error_rate, self.nBestSize)
@@ -133,6 +155,10 @@ class DomainsErrorSimulator(object):
             paramset = os.path.join(Settings.root,paramset)
             if not os.path.isfile(paramset):
                 logger.error('Error model config file "{}" does not exist'.format(paramset))
+            else:
+                logger.info("Error model config file loaded: {}".format(os.path.abspath(paramset)))
+        else:
+            logger.info("Error model config file loaded: {}".format(os.path.abspath(paramset)))
         return paramset
         
     def confuse_act(self, last_user_act):
@@ -141,7 +167,9 @@ class DomainsErrorSimulator(object):
         :param: (str) simulated users semantic action
         :returns (list) of confused user acts.
         """
-        uact = DiaAct.DiaActWithProb(last_user_act)
+        uact = last_user_act
+        if not isinstance(uact, DiaAct.DiaActWithProb):
+            uact = DiaAct.DiaActWithProb(uact)
         n_best = self.nBestGenerator.getNBest(uact)
         n_best = self.confScorer.assignConfScores(n_best)
         

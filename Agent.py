@@ -2,7 +2,7 @@
 # PyDial: Multi-domain Statistical Spoken Dialogue System Software
 ###############################################################################
 #
-# Copyright 2015 - 2017
+# Copyright 2015 - 2018
 # Cambridge University Engineering Department Dialogue Systems Group
 #
 # 
@@ -230,7 +230,7 @@ class DialogueAgent(object):
         :return: DiaAct -- the system's reponse dialogue act with verbalization
         ''' 
 
-        logger.dial("user input: {}".format([(x.to_string() if isinstance(x,DiaActWithProb) else x[0], round(x.P_Au_O, 3) if isinstance(x,DiaActWithProb) else x[1]) for x in asr_info]))
+        logger.dial("user input: {}".format([(x.to_string() if isinstance(x,DiaAct) else x[0], round(x.P_Au_O, 3) if isinstance(x,DiaAct) else x[1]) for x in asr_info]))
         
         # Check if user says bye and whether this is already valid
         self.callValidator.validate() # update time once more
@@ -242,7 +242,7 @@ class DialogueAgent(object):
         #--------------------------------------------------------------------------------------------------------------
         if self._increment_turn_and_check_maxTurns():
             sys_act = DiaAct('bye()')
-            sys_act.prompt_str = self.MAX_TURNS_PROMPT
+            sys_act.prompt = self.MAX_TURNS_PROMPT
             return sys_act
         
         # 1. USER turn:
@@ -251,7 +251,7 @@ class DialogueAgent(object):
         # Make sure there is some asr information:
         if not len(asr_info):
             sys_act = DiaAct('null()')
-            sys_act.prompt_str = self.NO_ASR_MSG
+            sys_act.prompt = self.NO_ASR_MSG
             return sys_act
         
         # TOPIC TRACKING: Note: can pass domainString directly here if cheating/developing or using simulate
@@ -758,8 +758,8 @@ class DialogueAgent(object):
         
         manager = defaultManager
             
-        if Settings.config.has_section('agent') and Settings.config.has_option('agent', 'config'):
-            manager = Settings.config.has_option('agent', 'config')
+        if Settings.config.has_section('agent') and Settings.config.has_option('agent', config):
+            manager = Settings.config.get('agent', config)
         try:
             # try to view the config string as a complete module path to the class to be instantiated
             components = manager.split('.')

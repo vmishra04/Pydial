@@ -2,7 +2,7 @@
 # PyDial: Multi-domain Statistical Spoken Dialogue System Software
 ###############################################################################
 #
-# Copyright 2015 - 2017
+# Copyright 2015 - 2018
 # Cambridge University Engineering Department Dialogue Systems Group
 #
 # 
@@ -51,7 +51,7 @@ class HDCTopicManagerPolicy(Policy.Policy):
     
     It allows for the system to hang up if the topic could not be identified after a specified amount of attempts.
     """
-    def __init__(self):
+    def __init__(self, dstring=None, learning=None):
         super(HDCTopicManagerPolicy,self).__init__(domainString="topicmanager",specialDomain=True)
         
         self.TIMES_CALLED = 0

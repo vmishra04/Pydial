@@ -74,12 +74,9 @@ import Policy
 import SummaryAction
 from policy.feudalRL.DIP_parametrisation import DIP_state, padded_state
 from policy.feudalRL.FeudalDQNPolicy import FeudalDQNPolicy
-try:
-	from policy.feudalRL.FeudalBBQNPolicy import FeudalBBQNPolicy
-	from policy.feudalRL.FeudalENACPolicy import FeudalENACPolicy
-	from policy.feudalRL.FeudalACERPolicy import FeudalACERPolicy
-except:
-	pass
+from policy.feudalRL.FeudalBBQNPolicy import FeudalBBQNPolicy
+from policy.feudalRL.FeudalENACPolicy import FeudalENACPolicy
+from policy.feudalRL.FeudalACERPolicy import FeudalACERPolicy
 from policy.feudalRL.feudalUtils import get_feudal_masks
 
 logger = utils.ContextLogger.getLogger('')

@@ -2,7 +2,7 @@
 # PyDial: Multi-domain Statistical Spoken Dialogue System Software
 ###############################################################################
 #
-# Copyright 2015 - 2017
+# Copyright 2015 - 2018
 # Cambridge University Engineering Department Dialogue Systems Group
 #
 # 
@@ -50,5 +50,14 @@ def init_global_ontology():
     global global_ontology
     global_ontology = FlatOntologyManager.FlatOntologyManager()
        
+def init_global_ontology_cer():
+    '''Should be called ONCE by hubs [texthub, simulate, dialogueserver] (and Tasks when creating) --
+    Then holds the ontology that is used and accessible system wide. Note that the class FlatOntologyManager(object) is a singleton.
+    '''
+    import cedm.ontology.FlatOntologyManager
 
+    OntologyUtils.initUtils()
+    
+    global global_ontology
+    global_ontology = cedm.ontology.FlatOntologyManager.FlatEntityOntologyManager()
 #END OF FILE

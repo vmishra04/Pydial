@@ -2,7 +2,7 @@
 # PyDial: Multi-domain Statistical Spoken Dialogue System Software
 ###############################################################################
 #
-# Copyright 2015 - 2017
+# Copyright 2015 - 2018
 # Cambridge University Engineering Department Dialogue Systems Group
 #
 # 
@@ -743,7 +743,7 @@ class UM(object):
             self.goal.patience = 0
 
         elif sys_act.act == 'badact' or sys_act.act == 'null' or\
-                (self.lastSysAct is not None and self.lastUserAct.act != 'repeat' and self.lastSysAct == sys_act):
+                (self.lastSysAct is not None and self.lastUserAct is not None and self.lastUserAct.act != 'repeat' and self.lastSysAct == sys_act):
             # Same action as last turn. Patience decreased.
             self.goal.patience -= 1
         elif self.patience_old_style:

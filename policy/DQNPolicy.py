@@ -2,7 +2,7 @@
 # PyDial: Multi-domain Statistical Spoken Dialogue System Software
 ###############################################################################
 #
-# Copyright 2015 - 2017
+# Copyright 2015 - 2018
 # Cambridge University Engineering Department Dialogue Systems Group
 #
 # 
@@ -21,18 +21,21 @@
 ###############################################################################
 
 '''
-DQNPolicy.py - deep Q network policy
+DQNPolicy.py - Deep Q Network policy
 ==================================================
 
 Copyright CUED Dialogue Systems Group 2015 - 2017
+
+The implementation of Double Deep Q Network. The algorithm is adapted to incorporate the action mask if needed.
+The details of implementation can be found here: https://arxiv.org/abs/1711.11486
+
+See also:
+https://web.stanford.edu/class/psych209/Readings/MnihEtAlHassibis15NatureControlDeepRL.pdf
 
 .. seealso:: CUED Imports/Dependencies: 
 
     import :class:`Policy`
     import :class:`utils.ContextLogger`
-
-.. warning::
-        Documentation not done.
 
 
 ************************

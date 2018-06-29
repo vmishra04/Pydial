@@ -2,7 +2,7 @@
 # PyDial: Multi-domain Statistical Spoken Dialogue System Software
 ###############################################################################
 #
-# Copyright 2015 - 2017
+# Copyright 2015 - 2018
 # Cambridge University Engineering Department Dialogue Systems Group
 #
 # 
@@ -26,13 +26,20 @@ A2CPolicy.py - Advantage Actor-Critic policy
 
 Copyright CUED Dialogue Systems Group 2015 - 2017
 
+The implementation of the advantage actor-critic with the temporal difference as an approximation
+of the advantage function. The network is defined in DRL.a2c.py
+You can turn on the importance sampling through the parameter A2CPolicy.importance_sampling
+
+The details of the implementation can be found here: https://arxiv.org/abs/1707.00130
+
+See also:
+https://dl.acm.org/citation.cfm?id=3009806
+
 .. seealso:: CUED Imports/Dependencies: 
 
     import :class:`Policy`
     import :class:`utils.ContextLogger`
 
-.. warning::
-        Documentation not done.
 
 
 ************************

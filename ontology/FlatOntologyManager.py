@@ -2,7 +2,7 @@
 # PyDial: Multi-domain Statistical Spoken Dialogue System Software
 ###############################################################################
 #
-# Copyright 2015 - 2017
+# Copyright 2015 - 2018
 # Cambridge University Engineering Department Dialogue Systems Group
 #
 # 
@@ -92,7 +92,8 @@ class FlatDomainOntology(object):
         ontology_fname = OntologyUtils.get_ontology_path(self.domainString)
         logger.info('Loading ontology: '+ontology_fname)
         try:
-            self.ontology = json.load(open(ontology_fname))
+            with open(ontology_fname) as ontofile:
+                self.ontology = json.load(ontofile)
         except IOError:
             #print IOError
             logger.error("No such file or directory: "+ontology_fname+". Probably <Settings.root> is not set/set wrong by config.")
@@ -364,12 +365,12 @@ class FlatOntologyManager(object):
     # Wrappers for domain access to ontologies/database methods and info.  NB: No checks on valid domain strings
     #------------------------------------------------------------------------------------------------------------
     def entity_by_features(self, dstring, constraints): 
-        if self.ontologyManagers[dstring] is not None:
+        if dstring in self.ontologyManagers and self.ontologyManagers[dstring] is not None:
             return self.ontologyManagers[dstring].db.entity_by_features(constraints=constraints)
         return {}
     
     def get_length_entity_by_features(self, dstring, constraints): 
-        if self.ontologyManagers[dstring] is not None:
+        if dstring in self.ontologyManagers and self.ontologyManagers[dstring] is not None:
             return self.ontologyManagers[dstring].get_length_entity_by_features(constraints=constraints)
         return 0
     
@@ -443,13 +444,13 @@ class FlatOntologyManager(object):
     #------------------------------------------------------------------------------------
     def get_requestable_slots(self, dstring):
         requestable = []
-        if self.ontologyManagers[dstring] is not None:
+        if dstring in self.ontologyManagers and self.ontologyManagers[dstring] is not None:
             requestable =  copy.copy(self.ontologyManagers[dstring].ontology['requestable'])
         return requestable
     
     def get_system_requestable_slots(self, dstring):
         requestable = []
-        if self.ontologyManagers[dstring] is not None:
+        if dstring in self.ontologyManagers and self.ontologyManagers[dstring] is not None:
             requestable = copy.copy(self.ontologyManagers[dstring].ontology['system_requestable'])
         return requestable
     
@@ -466,7 +467,7 @@ class FlatOntologyManager(object):
         '''NOTE: not using copy.copy() since when used, it is only looped over, not modified
         '''
         slotsValues = {}
-        if self.ontologyManagers[dstring] is not None:
+        if dstring in self.ontologyManagers and self.ontologyManagers[dstring] is not None:
             slotsValues = self.ontologyManagers[dstring].ontology["informable"] 
         return slotsValues
         
@@ -474,7 +475,7 @@ class FlatOntologyManager(object):
         '''NB no copy
         '''
         informable = []
-        if self.ontologyManagers[dstring] is not None:
+        if dstring in self.ontologyManagers and self.ontologyManagers[dstring] is not None:
             informable = self.ontologyManagers[dstring].informable_slots
         return informable 
         
@@ -484,7 +485,7 @@ class FlatOntologyManager(object):
     def get_ontology(self, dstring):
         '''Note: not using copy.copy() -- object assumed not to change
         '''
-        if self.ontologyManagers[dstring] is not None:
+        if dstring in self.ontologyManagers and self.ontologyManagers[dstring] is not None:
             return self.ontologyManagers[dstring].ontology
         return None
     
@@ -492,7 +493,7 @@ class FlatOntologyManager(object):
         '''NB no copy
         '''
         method = []
-        if self.ontologyManagers[dstring] is not None:
+        if dstring in self.ontologyManagers and self.ontologyManagers[dstring] is not None:
             method = self.ontologyManagers[dstring].ontology['method']
         return method
     
@@ -500,7 +501,7 @@ class FlatOntologyManager(object):
         '''NB no copy
         '''
         acts = []
-        if self.ontologyManagers[dstring] is not None:
+        if dstring in self.ontologyManagers and self.ontologyManagers[dstring] is not None:
             acts = self.ontologyManagers[dstring].ontology['discourseAct']
         if 'none' not in acts:
             acts.append('none')

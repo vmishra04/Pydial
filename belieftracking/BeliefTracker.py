@@ -2,7 +2,7 @@
 # PyDial: Multi-domain Statistical Spoken Dialogue System Software
 ###############################################################################
 #
-# Copyright 2015 - 2017
+# Copyright 2015 - 2018
 # Cambridge University Engineering Department Dialogue Systems Group
 #
 # 
@@ -378,11 +378,19 @@ if __name__ == "__main__":
     from utils import Settings
     Settings.load_root('/Users/su259/pydial-letsgo/')
     Settings.load_config(None)
+    Settings.set_seed(123)
     Settings.config.add_section("GENERAL")
     Settings.config.set("GENERAL",'domains', 'CamRestaurants')
     
     Ontology.init_global_ontology()
     tracker = FocusTracker('CamRestaurants')
-    tracker.update_belief_state(None, [('confirm(area=south)',1.0)])
+    print "hello()"
+    tracker.update_belief_state(None, [('hello()',1.0)])
+    print 'inform(area="centre")'
+    tracker.update_belief_state('request(area)', [('inform(area="centre")',0.3)])
+    print 'inform(area="north")'
+    tracker.update_belief_state('confirm(area="centre")', [('negate(area="north",pricerange="cheap")',1.0)])
+    tracker.update_belief_state('confirm(area="centre")', [('deny(area="centre",area="north",pricerange="cheap")',1.0)])
+#     tracker.update_belief_state('confirm(area="centre")', [('negate(area="north")',1.0)])
 
 #END OF FILE

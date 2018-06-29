@@ -2,7 +2,7 @@
 # PyDial: Multi-domain Statistical Spoken Dialogue System Software
 ###############################################################################
 #
-# Copyright 2015 - 2017
+# Copyright 2015 - 2018
 # Cambridge University Engineering Department Dialogue Systems Group
 #
 # 
@@ -372,7 +372,7 @@ class DialogueServer(object):
         if Settings.config.has_option("dialogueserver","subjectivefeedback"):
             self.COLLECT_SUBJECTIVE_FEEDBACK = Settings.config.getboolean("dialogueserver","subjectivefeedback")
         if Settings.config.has_option("dialogueserver","subjectivefeedbackprompt"):
-            self.COLLECT_SUBJECTIVE_PROMPT = Settings.config.getboolean("dialogueserver","subjectivefeedbackprompt")
+            self.COLLECT_SUBJECTIVE_PROMPT = Settings.config.get("dialogueserver","subjectivefeedbackprompt")
         if Settings.config.has_option("dialogueserver","dialhost"):
             self.host = Settings.config.get("dialogueserver","dialhost")
             self.host = self.host.strip('"')

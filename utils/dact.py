@@ -2,7 +2,7 @@
 # PyDial: Multi-domain Statistical Spoken Dialogue System Software
 ###############################################################################
 #
-# Copyright 2015 - 2017
+# Copyright 2015 - 2018
 # Cambridge University Engineering Department Dialogue Systems Group
 #
 # 
@@ -47,7 +47,7 @@ from utils import ContextLogger
 logger = ContextLogger.getLogger('')
 
 
-class DactItem:
+class DactItem(object):
     '''
     Dialogue act specification
 
@@ -509,14 +509,15 @@ def inferSlotsForAct(uacts, ontology=None):
             uact["slots"][:] = list((s, v) for (s, v) in uact["slots"] if s != "" or v != "")
     return uacts
 
-# if __name__ == '__main__':
+if __name__ == '__main__':
 #     import json
 #     ontology = json.load(open("/home/dial/mh521/DSTC/GM/scripts/config/ontology_dstc2_da.json"))
-#     act='inform(name="yu garden",phone="01223 248882")'
+    act='deny(name="yu garden",name="blabla")'
 #     test = boostutil.transformAct(ParseAct(act, user=False), {}, ontology, False)
 #     print json.dumps(test,indent=4)
-    
-   # act = ParseAct("inform(=restaurant)")
+     
+    pact = _InParseAct(act)
+    print pact
   #  ontology = json.load(open("scripts/config/ontology_Apr11.json","r"))
   #  act = inferSlotsForAct(act, ontology)
   #  print json.dumps(act)

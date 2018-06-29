@@ -2,7 +2,7 @@
 # PyDial: Multi-domain Statistical Spoken Dialogue System Software
 ###############################################################################
 #
-# Copyright 2015 - 2017
+# Copyright 2015 - 2018
 # Cambridge University Engineering Department Dialogue Systems Group
 #
 # 
@@ -65,10 +65,7 @@ from usersimulator import SimulatedUsersManager
 from utils import Settings
 from utils import ContextLogger
 from ontology import Ontology
-try:
-	import usersimulator.textgenerator.textgen_toolkit.SCTranslate as SCT
-except:
-	pass
+import usersimulator.textgenerator.textgen_toolkit.SCTranslate as SCT
 logger = ContextLogger.getLogger('')
 
 __author__ = "cued_dialogue_systems_group"

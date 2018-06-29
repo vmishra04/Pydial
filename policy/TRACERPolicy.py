@@ -2,7 +2,7 @@
 # PyDial: Multi-domain Statistical Spoken Dialogue System Software
 ###############################################################################
 #
-# Copyright 2015 - 2017
+# Copyright 2015 - 2018
 # Cambridge University Engineering Department Dialogue Systems Group
 #
 # 
@@ -21,18 +21,26 @@
 ###############################################################################
 
 '''
-A2CPolicy.py - Advantage Actor-Critic policy
+TRACERPolicy.py - Trust region advantage Actor-Critic policy with experience replay
 ==================================================
 
 Copyright CUED Dialogue Systems Group 2015 - 2017
+
+The implementation of the actor-critic algorithm with off-policy learning and trust region constraint for stable training.
+The definition of the network and the approximation of the natural gradient is computed in DRL.na2c.py.
+You can turn on the importance sampling through the parameter TRACERPolicy.importance_sampling
+
+The details of the implementation can be found here: https://arxiv.org/abs/1707.00130
+
+See also:
+https://arxiv.org/abs/1611.01224
+https://pdfs.semanticscholar.org/c79d/c0bdb138e5ca75445e84e1118759ac284da0.pdf
 
 .. seealso:: CUED Imports/Dependencies: 
 
     import :class:`Policy`
     import :class:`utils.ContextLogger`
 
-.. warning::
-        Documentation not done.
 
 
 ************************

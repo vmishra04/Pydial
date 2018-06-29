@@ -2,7 +2,7 @@
 # PyDial: Multi-domain Statistical Spoken Dialogue System Software
 ###############################################################################
 #
-# Copyright 2015 - 2017
+# Copyright 2015 - 2018
 # Cambridge University Engineering Department Dialogue Systems Group
 #
 # 
@@ -60,9 +60,12 @@ class SummaryAction(object):
         '''
         Records what domain the class is instantiated for, and what actions are available
 
-        :param domainString: (string) domain tag
-        :param empty: (bool)
-        :param confreq: (bool) representing if the action confreq is used
+        :param domainString: domain tag
+        :type domainString: string
+        :param empty: None
+        :type empty: bool
+        :param confreq: representing if the action confreq is used
+        :type confreq: bool
         '''
 
         self.domainString = domainString 
@@ -83,7 +86,7 @@ class SummaryAction(object):
             self.request_mask = Settings.config.getboolean('summaryacts', 'requestmask')
         self.bye_mask = True
         if Settings.config.has_option("summaryacts", "byemask"):
-            self.request_mask = Settings.config.getboolean('summaryacts', 'byemask')
+            self.bye_mask = Settings.config.getboolean('summaryacts', 'byemask')
 
         if not empty:
             for slot in Ontology.global_ontology.get_system_requestable_slots(domainString):
@@ -110,9 +113,12 @@ class SummaryAction(object):
         '''
         Converts the given summary action into a master action based on the current belief and the last system action.
 
-        :param belief: (dict) the current master belief
-        :param action: (string) the summary action to be converted to master action
-        :param lastSystemAction: (string) the system action of the previous turn
+        :param belief: the current master belief
+        :type belief: dict
+        :param action: the summary action to be converted to master action
+        :type action: string
+        :param lastSystemAction: the system action of the previous turn
+        :type lastSystemAction: string
         '''
 
         self._array_slot_summary = SummaryUtils.arraySlotSummary(belief, self.domainString)
@@ -152,8 +158,10 @@ class SummaryAction(object):
     def getNonExecutable(self, belief, lastSystemAction):
         '''
         Set of rules defining the mask over the action set, given the current belief state
-        :param belief: (dict) the current master belief
-        :param lastSystemAction: (string) the system action of the previous turn
+        :param belief: the current master belief
+        :type belief: dict
+        :param lastSystemAction: the system action of the previous turn
+        :type lastSystemAction: string
         :return: list of non-executable (masked) actions
         '''
 

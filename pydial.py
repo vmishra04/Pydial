@@ -4,7 +4,7 @@
 # PyDial: Multi-domain Statistical Spoken Dialogue System Software
 ###############################################################################
 #
-# Copyright 2015 - 2017
+# Copyright 2015 - 2018
 # Cambridge University Engineering Department Dialogue Systems Group
 #
 # 
@@ -441,8 +441,8 @@ def trainBatch(domain, configId, trainerr, ndialogs, source_iteration,seed=None)
         confsavefile = conf_dir + multipolicy + ".train.cfg"
 
     # Save the config file for this iteration
-    cf = open(confsavefile, 'w')
-    Settings.config.write(cf)
+    with open(confsavefile, 'w') as cf:
+        Settings.config.write(cf)
     error = float(trainerr) / 100.0
     # run the system
     simulator = Simulate.SimulationSystem(error_rate=error)
@@ -482,8 +482,8 @@ def setEvalConfig(domain, configId, evalerr, ndialogs, iteration, seed=None):
             Settings.config.set("gpsarsa", "scale", "1")
     # Save a copy of config file
     confsavefile = conf_dir + "%s.eval.%02d.cfg" % (policy, evalerr)
-    cf = open(confsavefile, 'w')
-    Settings.config.write(cf)
+    with open(confsavefile, 'w') as cf: 
+        Settings.config.write(cf)
 
 def evalPolicy(domain, configId, evalerr, ndialogs, iteration, seed=None):
     if isSingleDomain:
@@ -923,8 +923,7 @@ def plotTrainLogs(logfilelist,printtab,noplot,saveplot,datasetname,block=True):
             print "No log files specified"
             exit(0)
         for fname in logfilelist:
-            fn = open(fname,"r")
-            if fn:
+            with open(fname,"r") as fn:
                 logName = path(fname).namebase
                 if 'epsil0.' in logName:
                     logName = logName.replace('epsil0.', 'epsil0')
@@ -1033,8 +1032,7 @@ def plotTestLogs(logfilelist,printtab,noplot,datasetname,block=True):
         resultset = {}
         domains = None
         for fname in logfilelist:
-            fn = open(fname,"r")
-            if fn:
+            with open(fname,"r") as fn:
                 lines = fn.read().splitlines()
                 results = extractEvalData(lines)
                 if results:
@@ -1130,8 +1128,8 @@ def chat_command(configfile, seed=None, trainerrorrate=None, trainsourceiteratio
             logger.dial("*** Chat complete")
             # Save a copy of config file
             confsavefile = conf_dir + configId + ".chat.cfg"
-            cf = open(confsavefile, 'w')
-            Settings.config.write(cf)
+            with open(confsavefile, 'w') as cf:
+                Settings.config.write(cf)
         except clog.ExceptionRaisedByLogger:
             print "Command Aborted - see Log file for error:",logfile
             exit(0)
