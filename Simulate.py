@@ -65,7 +65,6 @@ from usersimulator import SimulatedUsersManager
 from utils import Settings
 from utils import ContextLogger
 from ontology import Ontology
-import usersimulator.textgenerator.textgen_toolkit.SCTranslate as SCT
 logger = ContextLogger.getLogger('')
 
 __author__ = "cued_dialogue_systems_group"
@@ -107,6 +106,7 @@ class SimulationSystem(object):
                 sampling_dict = os.path.join(Settings.root, 'usersimulator/textgenerator/textgen_dict.pkl')
             else:
                 sampling_dict = None
+            import usersimulator.textgenerator.textgen_toolkit.SCTranslate as SCT
             self.SCT = SCT.SCTranslate(sampling_dict=sampling_dict)
         elif self.sim_level == 'sys2text':
             pass #load here florians model

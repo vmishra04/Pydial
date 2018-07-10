@@ -923,43 +923,44 @@ def plotTrainLogs(logfilelist,printtab,noplot,saveplot,datasetname,block=True):
             print "No log files specified"
             exit(0)
         for fname in logfilelist:
-            with open(fname,"r") as fn:
-                logName = path(fname).namebase
-                if 'epsil0.' in logName:
-                    logName = logName.replace('epsil0.', 'epsil0')
-                i = logName.find('.')
-                if i<0:
-                    print "No index info in train log file name"
-                    exit(0)
-                curveName = logName[:i]
-                if datasetname == '':
-                    i = curveName.find('-')
-                    if i>=0:
-                        datasetname=curveName[:i]
-                lines = fn.read().splitlines()
-                results = extractEvalData(lines)
-                npoints = len(results[results.keys()[0]])
-                if npoints==0:
-                    print "Log file %s has no plotable data" % fname
-                else:
-                    if len(resultset) == 0:
-                        # the list of domains needs to be read from the logfile
-                        domains = results.keys()
-                        for domain in domains:
-                            resultset[domain] = {}
+            try:
+                with open(fname,"r") as fn:
+                    logName = path(fname).namebase
+                    if 'epsil0.' in logName:
+                        logName = logName.replace('epsil0.', 'epsil0')
+                    i = logName.find('.')
+                    if i<0:
+                        print "No index info in train log file name"
+                        exit(0)
+                    curveName = logName[:i]
+                    if datasetname == '':
+                        i = curveName.find('-')
+                        if i>=0:
+                            datasetname=curveName[:i]
+                    lines = fn.read().splitlines()
+                    results = extractEvalData(lines)
+                    npoints = len(results[results.keys()[0]])
+                    if npoints==0:
+                        print "Log file %s has no plotable data" % fname
                     else:
-                        domains_1 = resultset.keys().sort()
-                        domains_2 = results.keys().sort()
-                        assert domains_1 == domains_2, 'The logfiles have different domains'
-                    ncurves += 1
-                    for domain in domains:
-                        if curveName in resultset[domain].keys():
-                            curve = resultset[domain][curveName]
-                            for iteration in results[domain].keys():
-                                curve[iteration] = results[domain][iteration]
+                        if len(resultset) == 0:
+                            # the list of domains needs to be read from the logfile
+                            domains = results.keys()
+                            for domain in domains:
+                                resultset[domain] = {}
                         else:
-                            resultset[domain][curveName] = results[domain]
-            else:
+                            domains_1 = resultset.keys().sort()
+                            domains_2 = results.keys().sort()
+                            assert domains_1 == domains_2, 'The logfiles have different domains'
+                        ncurves += 1
+                        for domain in domains:
+                            if curveName in resultset[domain].keys():
+                                curve = resultset[domain][curveName]
+                                for iteration in results[domain].keys():
+                                    curve[iteration] = results[domain][iteration]
+                            else:
+                                resultset[domain][curveName] = results[domain]
+            except IOError:
                 print("Cannot find logfile %s" % fname)
         if ncurves>0:
             average_results = [[],[],[]]
@@ -1032,28 +1033,29 @@ def plotTestLogs(logfilelist,printtab,noplot,datasetname,block=True):
         resultset = {}
         domains = None
         for fname in logfilelist:
-            with open(fname,"r") as fn:
-                lines = fn.read().splitlines()
-                results = extractEvalData(lines)
-                if results:
-                    domains = results.keys()
-                    for domain in domains:
-                        resultset[domain] = {}
-                        akey = results[domain].keys()[0]
-                        aresult = results[domain][akey]
-                        if 'policy' in aresult.keys():
-                            policyname = results[domain][akey]['policy']
-                            if datasetname == '':
-                                i = policyname.find('-')
-                                if i>=0:
-                                    datasetname=policyname[:i]
-                            if not policyname in resultset[domain]: resultset[domain][policyname]={}
-                            for erate in results[domain].keys():
-                                resultset[domain][policyname][erate] = results[domain][erate]
-                        else:
-                            print 'Format error in log file',fname
-                            exit(0)
-            else:
+            try:
+                with open(fname,"r") as fn:
+                    lines = fn.read().splitlines()
+                    results = extractEvalData(lines)
+                    if results:
+                        domains = results.keys()
+                        for domain in domains:
+                            resultset[domain] = {}
+                            akey = results[domain].keys()[0]
+                            aresult = results[domain][akey]
+                            if 'policy' in aresult.keys():
+                                policyname = results[domain][akey]['policy']
+                                if datasetname == '':
+                                    i = policyname.find('-')
+                                    if i>=0:
+                                        datasetname=policyname[:i]
+                                if not policyname in resultset[domain]: resultset[domain][policyname]={}
+                                for erate in results[domain].keys():
+                                    resultset[domain][policyname][erate] = results[domain][erate]
+                            else:
+                                print 'Format error in log file',fname
+                                exit(0)
+            except IOError:
                 print "Cannot find logfile %s" % fname
                 exit(0)
         for domain in domains:
