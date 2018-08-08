@@ -684,6 +684,7 @@ class UM(object):
         self.patience_old_style = False
         if Settings.config.has_option('usermodel', 'oldstylepatience'):
             self.patience_old_style = Settings.config.getboolean('usermodel', 'oldstylepatience')
+
         self.old_style_parameter_sampling = True
         if Settings.config.has_option('usermodel', 'oldstylesampling'):
             self.old_style_parameter_sampling = Settings.config.getboolean('usermodel', 'oldstylesampling')
@@ -698,7 +699,6 @@ class UM(object):
         self.hdcSim = self._load_domain_simulator(domainString)
         self.lastUserAct = None
         self.lastSysAct = None
-        
         
     def init(self, otherDomainsConstraints):
         '''

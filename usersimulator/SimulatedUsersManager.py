@@ -146,8 +146,6 @@ class SimulatedUsersManager(object):
         if Settings.config.has_option("usermodel", "simlevel"):
             self.sim_level = Settings.config.get("usermodel", "simlevel")
 
-
-
     def set_allowed_codomains(self, ROOTDOMAIN):
         """
         Sets member (list) *allowed_codomains* given a root domain name (ie the domain of the first constraint)
@@ -176,7 +174,6 @@ class SimulatedUsersManager(object):
             self.allowed_codomains = list(self.possible_domains)
             self.allowed_codomains.remove(ROOTDOMAIN)
         return
-
 
     def sample_domains(self):
         """Randomly select a set of domains from those available. 

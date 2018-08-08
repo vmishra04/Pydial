@@ -43,7 +43,9 @@ def config_text(domains, root, seed,
                 n_samples, alpha_divergence, alpha, sigma_eps, sigma_prior,
                 stddev_var_mu, stddev_var_logsigma, mean_log_sigma,
                 nbestgeneratormodel,
-                delta, beta, is_threshold, train_iters_per_episode, training_frequency):
+                delta, beta, is_threshold, train_iters_per_episode, training_frequency,
+                no_head, keep_prob, dropout_start,
+                old_style_parameter_sampling):
 
     text = '[GENERAL]' + '\n'
     text += 'domains = ' + domains + '\n'
@@ -111,7 +113,7 @@ def config_text(domains, root, seed,
     text += 'h2_size = ' + h2_size + '\n'
     text += 'training_frequency = ' + training_frequency + '\n'
 
-    # BDQN
+    # Bayesian parameters
     text += 'n_samples = ' + n_samples + '\n'
     text += 'stddev_var_mu = ' + stddev_var_mu + '\n'
     text += 'stddev_var_logsigma = ' + stddev_var_logsigma + '\n'
@@ -120,6 +122,10 @@ def config_text(domains, root, seed,
     text += 'alpha =' + alpha + '\n'
     text += 'alpha_divergence =' + alpha_divergence + '\n'
     text += 'sigma_eps = ' + sigma_eps + '\n'
+    text += 'no_head = ' + no_head + '\n'
+    text += 'keep_prob = ' + keep_prob + '\n'
+    text += 'dropout_start = ' + dropout_start + '\n'
+    text += '\n'
 
     # ACER
     text += 'delta = ' + delta + '\n'
@@ -141,6 +147,7 @@ def config_text(domains, root, seed,
     text += 'usenewgoalscenarios = ' + usenewgoalscenarios + '\n'
     text += 'sampledialogueprobs = ' + sampledialogueprobs + '\n'
     text += 'oldstylepatience = ' + oldstylepatience + '\n'
+    text += 'oldstylesampling = ' + old_style_parameter_sampling + '\n'
     text += '\n'
 
     text += '[errormodel]' + '\n'
@@ -206,10 +213,10 @@ def run_on_grid(targetDir, step, iter_in_step, test_iter_in_step, parallel, exec
     os.system(command)
 
 def main(argv):
-    step = '20'
-    iter_in_step = '200'
-    test_iter_in_step = '200'
-    save_step = '200'
+    step = '10'
+    iter_in_step = '100'
+    test_iter_in_step = '100'
+    save_step = '100'
     parallel = '1'
     maxiter = str(int(step) * int(iter_in_step))
 
@@ -231,7 +238,7 @@ def main(argv):
     ################################################
     belieftype = 'focus'
     useconfreq = 'False'
-    policytype_vary = ['tracer'] #'['dqn', 'a2c', 'enac', 'bdqn', 'acer']  # gp dqn bdqn acer
+    policytype_vary = ['bdqn']#dropout', 'concrete', 'bootstrapped'] #'dqn', 'bbqn', 'bdqn'] # 'dropout', 'concrete'
     startwithhello = 'False'
     inpolicyfile = 'policyFile'
     outpolicyfile = 'policyFile'
@@ -275,6 +282,10 @@ def main(argv):
     stddev_var_logsigma = '0.01'  # stdv of variance for variance
     mean_log_sigma = '0.000001'  # prior mean for variance
 
+    no_head = '3'  # number of heads used for
+    keep_prob = '0.9'  # dropout level
+    dropout_start = '0.2'  # concrete dropout level
+
     ################################################
     ###  ACER parameters
     ################################################
@@ -288,10 +299,11 @@ def main(argv):
     ################################################
     usenewgoalscenarios = 'True'
     sampledialogueprobs = 'True'
+    old_style_parameter_sampling = 'True'  # for bdqn True
     confusionmodel = 'RandomConfusions'
     confscorer = 'additive'  # 'additive'
     nbestgeneratormodel = 'SampledNBestGenerator'
-    nbestsize = '1'
+    nbestsize = '3'
     patience = '3'
     penaliseallturns = 'True'
     wrongvenuepenalty = '0'
@@ -300,7 +312,6 @@ def main(argv):
     oldstylepatience = 'True'
     forcenullpositive = 'False'
     runError_vary = ['0']
-    # runError_vary = ['0' , '15', '30', '45', '50']
 
     if domains is 'CamRestaurants':
         n_in = '268'
@@ -379,6 +390,14 @@ def main(argv):
                                                 targetDir = 'CamRestaurants_enac_'
                                             elif policytype == 'bdqn':
                                                 targetDir = 'CamRestaurants_bdqn_'
+                                            elif policytype == 'bbqn':
+                                                targetDir = 'CamRestaurants_bbqn_'
+                                            elif policytype == 'concrete':
+                                                targetDir = 'CamRestaurants_concrete_'
+                                            elif policytype == 'bootstrapped':
+                                                targetDir = 'CamRestaurants_bootstrapped_'
+                                            elif policytype == 'dropout':
+                                                targetDir = 'CamRestaurants_dropout_'
                                             elif policytype == 'acer':
                                                 targetDir = 'CamRestaurants_acer_'
                                             elif policytype == 'a2cis':
@@ -425,7 +444,9 @@ def main(argv):
                                                     n_samples, alpha_divergence, alpha, sigma_eps, sigma_prior,
                                                     stddev_var_mu, stddev_var_logsigma, mean_log_sigma,
                                                     nbestgeneratormodel,
-                                                    delta, beta, is_threshold, train_iters_per_episode, training_frequency)
+                                                    delta, beta, is_threshold, train_iters_per_episode, training_frequency,
+                                                    no_head, keep_prob, dropout_start,
+                                                    old_style_parameter_sampling)
 
                                             # run_on_grid(targetDir, execDir, configName, text)
                                             tmpName = 'gRun' + str(ConfigCounter)

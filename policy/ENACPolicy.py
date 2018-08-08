@@ -31,7 +31,6 @@ using Tensorflow and then the natural gradient is obtained through function trai
 You can turn on the importance sampling through the parameter ENACPolicy.importance_sampling
 
 The details of implementation can be found here: https://arxiv.org/abs/1707.00130
-
 See also:
 https://www.elen.ucl.ac.be/Proceedings/esann/esannpdf/es2007-125.pdf
 

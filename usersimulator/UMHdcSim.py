@@ -150,7 +150,7 @@ class UMHdcSim(UMSimulator.UMSimulator):
         self.use_new_goal_scenarios = False
         self.sampleDecisiconProbs = False
         self.patience_old_style = False
-        self.old_style_parameter_sampling = True
+        self.old_style_parameter_sampling = False
         config_file_path = 'config/defaultUM.cfg'
         self.rand_decision_probs = {'InformCombination':     0.6,
                        'AddSlotToReq':          0.333,
@@ -236,8 +236,7 @@ class UMHdcSim(UMSimulator.UMSimulator):
         self.agenda.init(goal)
         self.last_user_act = DiaAct.DiaAct('null()')
         self.last_sys_act = DiaAct.DiaAct('null()')
-        
-        #if self.sampleDecisiconProbs:
+
         if self.sampling_probs:
             self._sampleProbs()
             
@@ -1249,17 +1248,17 @@ class UMHdcSim(UMSimulator.UMSimulator):
 
         # Implicit confirmations okay.
         return True
-    
-    '''def _sampleProbs(self):
-        self.rand_decision_probs['AffirmCombination'] = Settings.random.rand()
-        self.rand_decision_probs['InformCombination'] = Settings.random.rand()
-        if self.old_style_parameter_sampling:
-            self.max_patience = Settings.random.randint(2,10)'''
 
     def _sampleProbs(self):
         for key in self.sampling_probs:
             if type(self.sampling_probs[key]) is list:
                 self.rand_decision_probs[key] = Settings.random.uniform(self.sampling_probs[key][0], self.sampling_probs[key][1])
+
+        # addition for the bdqn algorithms
+        if self.old_style_parameter_sampling:
+            self.rand_decision_probs['AffirmCombination'] = Settings.random.rand()
+            self.rand_decision_probs['InformCombination'] = Settings.random.rand()
+            self.max_patience = Settings.random.randint(2, 6)
 
     def _normalise_act_no_rules(self, dap):
         #logger.debug(str(dap))

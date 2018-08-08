@@ -21,11 +21,11 @@
 ###############################################################################
 
 """
-Implementation of DQN -  Deep Q Network with BBQ
+Implementation of Deep Q Network with Bayes By Backprop
 
 The algorithm is developed with  Tensorflow
 
-Author: Chris Tegho - Original Script by Pei-Hao Su
+Copyright CUED Dialogue Systems Group 2015 - 2018
 """
 import tensorflow as tf
 import numpy as np
@@ -63,7 +63,7 @@ class DeepQNetwork(object):
         self.alpha = alpha
         self.sigma_eps = sigma_eps
 
-            # Create the deep Q network
+        # Create the deep Q network
         self.inputs, self.action, self.log_qw, self.log_pw, self.h_samples, self.Qout, self.Variance, self.Mean, self.log_pwi, self.log_qwi = \
             self.create_bbq_network(self.architecture, self.h1_size, self.h2_size, self.n_samples, self.sigma_prior, \
             self.stddev_var_mu,  self.stddev_var_logsigma, self.mean_log_sigma, self.sigma_eps)
@@ -94,30 +94,22 @@ class DeepQNetwork(object):
             for i in range(self.n_samples):
                 pred_q_i_ =  tf.reshape(tf.reduce_sum(self.h_samples[i] * actions_one_hot, axis=1), [self.batch_size,1])
                 pred_q_i = (self.sampled_q - pred_q_i_)**2
-            	loss_i_ = tf.reduce_sum((self.pi_i) * (self.log_qwi[i] - self.log_pwi[i])) + tf.reduce_sum(pred_q_i) / float(self.batch_size)
+                loss_i_ = tf.reduce_sum((self.pi_i) * (self.log_qwi[i] - self.log_pwi[i])) + tf.reduce_sum(pred_q_i) / float(self.batch_size)
                 if (i == 0):
                     loss_i = loss_i_
                     loss_i = tf.reshape(loss_i, [1, 1])
                 else:
                     loss_i = tf.concat(axis=0, values=[loss_i, tf.reshape(loss_i_, [1,1])])
-	    #self.ct506 = loss_i
-	    self.log_likelihood +=  tf.reduce_sum(pred_q_i) / float(self.batch_size)
+            self.log_likelihood +=  tf.reduce_sum(pred_q_i) / float(self.batch_size)
             loss_i_minus_max = loss_i - tf.reduce_max(loss_i, axis=0, keep_dims=False)
-            #self.ct5066 = loss_i_minus_max
+
             for i in range(self.n_samples):
                 explossi = tf.exp(loss_i_minus_max[i])
                 self.loss_sum += explossi
                 self.loss += explossi*loss_i[i]
-	    #self.ct507 = explossi
-	    #self.ct508 = self.loss_sum
-	    #self.ct510 = self.loss
             self.loss /= self.loss_sum
 
-	    #self.ct509 = loss_i
-	    #self.ct511 = self.loss
-
-        elif (self.alpha_divergence):
-            #loss_i = tf.Variable(tf.zeros([self.n_samples, self.batch_size,1]))
+        elif self.alpha_divergence:
             for i in range(self.n_samples):
                 pred_q_i_ =  tf.reshape(tf.reduce_sum(self.h_samples[i] * actions_one_hot, axis=1), [self.batch_size,1])
                 # the likelihood using target weights
@@ -129,45 +121,23 @@ class DeepQNetwork(object):
                 else:
                     loss_i = tf.concat(axis=0, values=[loss_i, tf.reshape(pred_q_i, [1, self.batch_size,1])])
 
-            #self.ct506 = loss_i
-            #self.ct5066 = (self.sampled_q - pred_q_i_)**2
             self.log_likelihood = tf.reduce_logsumexp(loss_i, axis=0, keep_dims=True)
-            #self.ct508 = self.log_likelihood
-            #self.ct509 = tf.reduce_logsumexp(loss_i)
+
             self.log_likelihood /= self.n_samples
             self.log_likelihood = (-1./self.alpha)*tf.reduce_sum(self.log_likelihood)
 
-            #self.ct511 = tf.reduce_sum(self.ct507)
-
-            #self.log_likelihood /= self.n_samples
             self.loss = tf.reduce_sum(self.pi_i * (self.log_qw - self.log_pw)) + self.log_likelihood / float(self.batch_size)
-
-        elif (False):
-            self.pi_i = 1./(2**(self.episodecount)-2**(self.episodecount-np.float(self.n_batches)))
-            for i in range(self.n_samples):
-                pred_q_i =  tf.reshape(tf.reduce_sum(self.h_samples[i] * actions_one_hot, axis=1), [64,1])
-                # the likelihood using target weights
-                #self.log_likelihood += tf.reduce_sum(self.log_gaussian(self.sampled_q, pred_q_i, self.sigma_prior))
-                self.log_likelihood += (self.sampled_q - pred_q_i)**2
-
-            self.log_likelihood /= self.n_samples
-            self.log_likelihood = tf.reduce_sum(self.log_likelihood)
-            self.loss = tf.reduce_sum((self.pi_i) * (self.log_qw - self.log_pw)) + self.log_likelihood / float(self.batch_size)
         else:
             for i in range(self.n_samples):
                 pred_q_i =  tf.reshape(tf.reduce_sum(self.h_samples[i] * actions_one_hot, axis=1), [self.batch_size,1])
                 # the likelihood using target weights
                 #self.log_likelihood += tf.reduce_sum(self.log_gaussian(self.sampled_q, pred_q_i, self.sigma_prior))
                 self.log_likelihood += (self.sampled_q - pred_q_i)**2
-	    #self.ct508 = self.h_samples
+
             self.log_likelihood /= self.n_samples
-	    #self.ct509 = self.log_likelihood
             self.log_likelihood = tf.reduce_sum(self.log_likelihood)
-	    #self.ct510 = tf.reduce_sum(self.ct508)
             self.loss = tf.reduce_sum(self.pi_i * (self.log_qw - self.log_pw)) + self.log_likelihood / float(self.batch_size)
-	    #self.ct511 = self.pi_i * (self.log_qw - self.log_pw)
         self.diff = self.sampled_q - self.pred_q
-        #self.ct510 = self.log_likelihood
         self.KL = (self.pi_i * (self.log_qw - self.log_pw))
 
         # Define loss and optimization Op
@@ -229,7 +199,6 @@ class DeepQNetwork(object):
                                                             (W2, b2, W_fc2_mu, W_fc2_logsigma, b_fc2_mu, b_fc2_logsigma),
                                 (Wout, bout, W_out_mu, W_out_logsigma, b_out_mu, b_out_logsigma)]:
 
-
                 # first weight prior
                 sample_log_pw += tf.reduce_sum(self.log_gaussian(W, 0., sigma_prior))
                 sample_log_pw += tf.reduce_sum(self.log_gaussian(b, 0., sigma_prior))
@@ -245,12 +214,11 @@ class DeepQNetwork(object):
             log_pwi += [sample_log_pw]
             log_qwi += [sample_log_qw]
 
-	#self.ct506 = Qout
-	#self.ct507 = log_qw- log_pw
+
         log_qw /= n_samples
         log_pw /= n_samples
         Qout /= n_samples
-	#self.ct5066 = Qout
+
 
         return inputs, action, log_qw, log_pw, h_samples, Qout, W_fc2_logsigma, W_fc2_mu, log_pwi, log_qwi
 
@@ -263,22 +231,12 @@ class DeepQNetwork(object):
         self.sampled_q: sampled_q,
         self.episodecount : episodecount
         })
-    #
-
 
     def predict(self, inputs):
-        #return self.sess.run(self.pred_q, feed_dict={
         return self.sess.run(self.Qout, feed_dict={
             self.inputs: inputs
         })
 
-    """
-    def predict_Boltzman(self, inputs, temperature):
-        return self.sess.run(self.softmax_Q, feed_dict={
-            self.inputs: inputs
-            self.temperature = temperature
-        })
-    """
 
     def predict_action(self, inputs):
         return self.sess.run(self.pred_q, feed_dict={
@@ -286,13 +244,11 @@ class DeepQNetwork(object):
         })
 
     def predict_target(self, inputs):
-        #return self.sess.run(self.pred_q, feed_dict={
         return self.sess.run(self.target_Qout, feed_dict={
             self.target_inputs: inputs
         })
 
     def predict_target_with_action_maxQ(self, inputs):
-        #return self.sess.run(self.pred_q_target, feed_dict={
         return self.sess.run(self.action_maxQ_target, feed_dict={
             self.target_inputs: inputs,
             self.inputs: inputs
@@ -304,14 +260,14 @@ class DeepQNetwork(object):
     def load_network(self, load_filename):
         self.saver = tf.train.Saver()
         try:
-            self.saver.restore(self.sess, load_filename)
+            self.saver.restore(self.sess,  './' + load_filename)
             print "Successfully loaded:", load_filename
         except:
             print "Could not find old network weights"
 
     def save_network(self, save_filename):
         print 'Saving deepq-network...'
-        self.saver.save(self.sess, save_filename)
+        self.saver.save(self.sess, './' + save_filename)
 
     def clipped_error(self, x):
         return tf.where(tf.abs(x) < 1.0, 0.5 * tf.square(x), tf.abs(x) - 0.5) # condition, true, false

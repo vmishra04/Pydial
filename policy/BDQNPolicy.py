@@ -21,18 +21,23 @@
 ###############################################################################
 
 '''
-DQNPolicy.py - deep Q network policy
+BDQNPolicy.py - deep Bayesian Q network policy
 ==================================================
 
-Copyright CUED Dialogue Systems Group 2015 - 2017
+Copyright CUED Dialogue Systems Group 2015 - 2018
+
+Implementation of Bayes by Backprop. The prediction is used both at training and testing time.
+The model is highly dependent on the following parameters:
+
+
+See also:
+https://arxiv.org/abs/1505.05424
+http://zacklipton.com/media/papers/bbq-learning-dialogue-policy-lipton2016.pdf
 
 .. seealso:: CUED Imports/Dependencies:
 
     import :class:`Policy`
     import :class:`utils.ContextLogger`
-
-.. warning::
-        Documentation not done.
 
 
 ************************
@@ -90,7 +95,6 @@ def flatten_belief(belief, domainUtil, merge=False):
                 for value in domainUtil.ontology['informable'][slot]:  # + ['**NONE**']:
                     add_feature.append(belief['beliefs'][slot][value])
 
-                # pfb30 11.03.2017
                 try:
                     add_feature.append(belief['beliefs'][slot]['**NONE**'])
                 except:
@@ -507,37 +511,6 @@ class BDQNPolicy(Policy.Policy):
             target_value_Q = cur_target_q[0]
             gamma_Q_s_tplu1_maxa_ = self.gamma * target_value_Q[np.argmax(admissible)]
 
-        #print 'Q_s_t_a_t_', Q_s_t_a_t_
-        #print 'gamma_Q_s_tplu1_maxa_', gamma_Q_s_tplu1_maxa_
-        """
-        s_batch = np.vstack([np.expand_dims(x, 0) for x in s_batch])
-        s2_batch = np.vstack([np.expand_dims(x, 0) for x in s2_batch])
-        #target_q = self.bbqn.predict_target_with_action_maxQ(s2_batch)
-        action_q = self.bbqn.predict(s2_batch)
-        target_q = self.bbqn.predict_target(s2_batch)
-
-        y_i = []
-        for k in xrange(min(self.minibatch_size, self.episodes[self.domainString].size())):
-            Q_bootstrap_label = 0
-            if t_batch[k]:
-                Q_bootstrap_label = r_batch[k]
-            else:
-                if self.q_update == 'single':
-                    execMask = self.summaryaction.getExecutableMask(s2_ori_batch[k], a_batch[k])
-                    action_Q = target_q[k]
-                    admissible = np.add(action_Q, np.array(execMask))
-                    #logger.info('action Q...')
-                    #print admissible
-                    Q_bootstrap_label = r_batch[k] + self.gamma * np.max(admissible)
-                elif self.q_update == 'double':
-                    execMask = self.summaryaction.getExecutableMask(s2_ori_batch[k], a_batch[k])
-                    action_Q = action_q[k]
-                    value_Q = target_q[k]
-                    admissible = np.add(action_Q, np.array(execMask))
-                    Q_bootstrap_label = r_batch[k] + self.gamma * value_Q[np.argmax(admissible)]
-            y_i.append(Q_bootstrap_label)
-        """
-
         if self.replay_type == 'vanilla':
             self.episodes[domainInControl].record(state=cState, \
                                                   state_ori=state, action=cAction, reward=reward)
@@ -559,25 +532,6 @@ class BDQNPolicy(Policy.Policy):
             logger.warning("record attempted to be finalized for domain where nothing has been recorded before")
             return
 
-        # print 'Episode Avg_Max_Q', float(self.episode_ave_max_q)/float(self.episodes[domainInControl].size())
-        #print 'Episode Avg_Max_Q', np.mean(self.episode_ave_max_q)
-
-        #print 'saving statics'
-        #self.saveStats()
-        #print self.stats
-        #print 'stdVar'
-        #print self.stdVar
-        #print 'meanVar'
-        #print self.meanVar
-        #print 'stdMean'
-        #print self.stdMean
-        #print 'meanMean'
-        #print self.meanMean
-        # print 'td_error'
-        # print self.td_error
-        # print 'td_errorVar'
-        # print self.td_errorVar
-
         # normalising total return to -1~1
         reward /= 20.0
 
@@ -588,19 +542,12 @@ class BDQNPolicy(Policy.Policy):
                                                   state_ori=TerminalState(), action=terminal_action, reward=reward,
                                                   terminal=True)
         elif self.replay_type == 'prioritized':
-            # heuristically assign 0.0 to Q_s_t_a_t_ and Q_s_tplu1_maxa_, doesn't matter as it is not used
-            if True:
-                # if self.samplecount >= self.capacity:
-                self.episodes[domainInControl].record(state=terminal_state, \
-                                                      state_ori=TerminalState(), action=terminal_action, reward=reward, \
-                                                      Q_s_t_a_t_=0.0, gamma_Q_s_tplu1_maxa_=0.0, uniform=False,
-                                                      terminal=True)
-            else:
-                self.episodes[domainInControl].record(state=terminal_state, \
-                                                      state_ori=TerminalState(), action=terminal_action, reward=reward, \
-                                                      Q_s_t_a_t_=0.0, gamma_Q_s_tplu1_maxa_=0.0, uniform=True,
-                                                      terminal=True)
-        return
+            # heuristically assign 0.0 to Q_s_t_a_t_ and Q_s_tplu1_maxa_, doesn't matter as it is not use
+            # if self.samplecount >= self.capacity:
+            self.episodes[domainInControl].record(state=terminal_state, \
+                                                  state_ori=TerminalState(), action=terminal_action, reward=reward, \
+                                                  Q_s_t_a_t_=0.0, gamma_Q_s_tplu1_maxa_=0.0, uniform=False,
+                                                  terminal=True)
 
     def convertStateAction(self, state, action):
         '''
@@ -650,29 +597,10 @@ class BDQNPolicy(Policy.Policy):
             else:
                 action_Q = self.bbqn.predict(np.reshape(beliefVec, (1, len(beliefVec))))  # + (1. / (1. + i + j))
                 admissible = np.add(action_Q, np.array(execMask))
-                logger.info('action Q...')
-                print admissible
                 nextaIdex = np.argmax(admissible)
 
                 # add current max Q to self.episode_ave_max_q
-                print 'current maxQ', np.max(admissible)
                 self.episode_ave_max_q.append(np.max(admissible))
-
-        elif self.exploration_type == 'Boltzman':
-            # softmax
-            if not self.is_training:
-                self.epsilon = 0.001
-            # self.epsilon here is served as temperature
-            action_Q = self.bbqn.predict(np.reshape(beliefVec, (1, len(beliefVec))))  # + (1. / (1. + i + j))
-            action_Q_admissible = np.add(action_Q, np.array(execMask))  # enforce Q of inadmissible actions to be -inf
-
-            action_prob = drlutils.softmax(action_Q_admissible / self.epsilon)
-            logger.info('action Q...')
-            print action_Q_admissible
-            logger.info('action prob...')
-            print action_prob
-            sampled_prob = np.random.choice(action_prob[0], p=action_prob[0])
-            nextaIdex = np.argmax(action_prob[0] == sampled_prob)
 
         self.stats[nextaIdex] += 1
         summaryAct = self.summaryaction.action_names[nextaIdex]
@@ -718,8 +646,7 @@ class BDQNPolicy(Policy.Policy):
                         execMask = self.summaryaction.getExecutableMask(s2_ori_batch[k], a_batch[k])
                         action_Q = target_q[k]
                         admissible = np.add(action_Q, np.array(execMask))
-                        # logger.info('action Q...')
-                        # print admissible
+
                         Q_bootstrap_label = r_batch[k] + self.gamma * np.max(admissible)
                     elif self.q_update == 'double':
                         execMask = self.summaryaction.getExecutableMask(s2_ori_batch[k], a_batch[k])
@@ -743,27 +670,9 @@ class BDQNPolicy(Policy.Policy):
             reshaped_yi = np.vstack([np.expand_dims(x, 0) for x in y_i])
             logger.info("s_batch")
             logger.info(s_batch)
-            # reshaped_yi = np.reshape(y_i, (min(self.minibatch_size, self.episodes[self.domainString].size()), 1))
-	    #self.bbqn.update_target_network()
+
             predicted_q_value, _, currentLoss, logLikelihood, varFC2, meanFC2, td_error, KL_div = self.bbqn.train(s_batch, a_batch_one_hot, reshaped_yi, self.episodecount)
-#, ct506d,ct5066d, ct507d, ct508d, ct509d, ct510d, ct511d
-            # print 'y_i'
-            # print y_i
-            # print 'currentLoss', currentLoss
-            # print 'predict Q'
-            # print predicted_q_value
-            # print 'loglikelihood', logLikelihood
-            # #print 'ct506', np.shape(np.array(td_error))
-            # print 'KL Div', KL_div
-            #print 'ct506d', np.shape(np.array(ct506d)), ct506d
-            #print 'ct5066d', np.shape(np.array(ct5066d)), ct5066d
-            #print 'ct507d', np.shape(np.array(ct507d)), ct507d
-            #print 'ct508d', np.shape(np.array(ct508d)), ct508d
-            #print 'ct509d', np.shape(np.array(ct509d)), ct509d
-            #print 'ct510d', np.shape(np.array(ct510d)), ct510d
-            #print 'ct511d', np.shape(np.array(ct511d)), ct511d
-            #print 'pi_i', pi_i
-            #print 'shape ct5066' , logLikelihood.shape()
+
             self.stdVar += [np.var(np.log(1.0+np.exp(varFC2)))]
             self.meanVar += [np.mean(np.log(1.0+np.exp(varFC2)))]
             self.stdMean += [np.var(meanFC2)]

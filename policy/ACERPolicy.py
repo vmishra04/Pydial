@@ -444,24 +444,6 @@ class ACERPolicy(Policy.Policy):
         else:
             print 'DOMAIN {} SIZE NOT SPECIFIED, PLEASE DEFINE n_in'.format(domain_string)
 
-    def get_n_in(self, domain_string):
-        if domain_string == 'CamRestaurants':
-            return 268
-        elif domain_string == 'CamHotels':
-            return 111
-        elif domain_string == 'SFRestaurants':
-            return 636
-        elif domain_string == 'SFHotels':
-            return 438
-        elif domain_string == 'Laptops6':
-            return 268 # ic340: this is wrong
-        elif domain_string == 'Laptops11':
-            return 257
-        elif domain_string is 'TV':
-            return 188
-        else:
-            print 'DOMAIN {} SIZE NOT SPECIFIED, PLEASE DEFINE n_in'.format(domain_string)
-
     def act_on(self, state, hyps=None):
         if self.lastSystemAction is None and self.startwithhello:
             systemAct, nextaIdex, mu, mask = 'hello()', -1, None, None
@@ -493,11 +475,8 @@ class ACERPolicy(Policy.Policy):
         cState, cAction = self.convertStateAction(state, action)
 
         # normalising total return to -1~1
-        #reward /= 40.0
         reward /= 20.0
-        """
-        reward = float(reward+10.0)/40.0
-        """
+
         value = self.acer.predict_value([cState], [mask])
 
         if self.replay_type == 'vanilla':

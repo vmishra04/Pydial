@@ -188,14 +188,6 @@ class DeepQNetwork(object):
             self.action: action
         })
 
-    """
-    def predict_Boltzman(self, inputs, temperature):
-        return self.sess.run(self.softmax_Q, feed_dict={
-            self.inputs: inputs
-            self.temperature = temperature
-        })
-    """
-
     def predict_action(self, inputs):
         return self.sess.run(self.pred_q, feed_dict={
             self.inputs: inputs
@@ -225,7 +217,7 @@ class DeepQNetwork(object):
         self.saver = tf.train.Saver()
         if load_filename.split('.')[-3] != '0':
             try:
-                self.saver.restore(self.sess, load_filename)
+                self.saver.restore(self.sess, './' + load_filename)
                 print "Successfully loaded:", load_filename
             except:
                 print "Could not find old network weights"
@@ -234,7 +226,7 @@ class DeepQNetwork(object):
 
     def save_network(self, save_filename):
         print 'Saving deepq-network...'
-        self.saver.save(self.sess, save_filename) # yes but no need to change
+        self.saver.save(self.sess, './' +save_filename)  # yes but no need to change
 
     def clipped_error(self, x):
         return tf.where(tf.abs(x) < 1.0, 0.5 * tf.square(x), tf.abs(x) - 0.5) # condition, true, false
@@ -363,7 +355,7 @@ class NNFDeepQNetwork(object):
 
     def save_network(self, save_filename):
         print 'Saving deepq-network...'
-        self.saver.save(self.sess, save_filename)
+        self.saver.save(self.sess, './' +  save_filename)
 
     def update_target_network(self):
         self.sess.run(self.update_target_network_params)
@@ -372,7 +364,7 @@ class NNFDeepQNetwork(object):
         self.saver = tf.train.Saver()
         if load_filename.split('.')[-3] != '0':
             try:
-                self.saver.restore(self.sess, load_filename)
+                self.saver.restore(self.sess, './' + load_filename)
                 print "Successfully loaded:", load_filename
             except:
                 print "Could not find old network weights"

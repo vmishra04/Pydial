@@ -288,9 +288,15 @@ class PolicyManager(object):
             elif policy_type == 'tracer':
                 from policy import TRACERPolicy
                 self.domainPolicies[domainString] = TRACERPolicy.TRACERPolicy(in_policy_file, out_policy_file, domainString, learning)
-            elif policy_type == 'bbqn':
-                from policy import BBQNPolicy
-                self.domainPolicies[domainString] = BBQNPolicy.BBQNPolicy(in_policy_file, out_policy_file, domainString, learning)
+            elif policy_type == 'concrete':
+                from policy import ConcreteDQNPolicy
+                self.domainPolicies[domainString] = ConcreteDQNPolicy.ConcreteDQNPolicy(in_policy_file, out_policy_file, domainString, learning)
+            elif policy_type == 'bootstrapped':
+                from policy import BootstrappedDQNPolicy
+                self.domainPolicies[domainString] = BootstrappedDQNPolicy.BootstrappedDQNPolicy(in_policy_file, out_policy_file, domainString, learning)
+            elif policy_type == 'dropout':
+                from policy import DropoutDQNPolicy
+                self.domainPolicies[domainString] = DropoutDQNPolicy.DropoutDQNPolicy(in_policy_file, out_policy_file, domainString, learning)
             elif policy_type == 'feudal':
                 from policy import FeudalPolicy
                 self.domainPolicies[domainString] = FeudalPolicy.FeudalPolicy(in_policy_file, out_policy_file, domainString, learning)
