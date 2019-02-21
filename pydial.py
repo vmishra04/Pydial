@@ -4,7 +4,7 @@
 # PyDial: Multi-domain Statistical Spoken Dialogue System Software
 ###############################################################################
 #
-# Copyright 2015 - 2018
+# Copyright 2015 - 2019
 # Cambridge University Engineering Department Dialogue Systems Group
 #
 # 
@@ -29,9 +29,9 @@ import re
 import numpy as np
 
 # Uncomment for mac os users
-#import matplotlib
-#matplotlib.use('TkAgg')
-#matplotlib.use('Agg')
+# import matplotlib
+# matplotlib.use('TkAgg')
+# matplotlib.use('Agg')
 
 import matplotlib.pyplot as plt
 
@@ -66,7 +66,9 @@ gtesteverybatch = False
 
 gpscale = 1
 
-gplotnum=1
+gplotnum = 1
+
+gbatchnum = 0
 
 isSingleDomain = False
 taskID = ""
@@ -75,6 +77,7 @@ domains = []
 policytype = "hdc"
 
 policytypes = {}
+
 
 def help_command():
     """ Provide an overview of pydial functionality
@@ -142,10 +145,11 @@ def help_command():
     print "  pydial help        this overview"
     print "  pydial cmd --help  help for a specific command\n"
 
+
 def conventionCheck(name):
-    global taskID,domain,policytype
+    global taskID, domain, policytype
     try:
-        if name.find('-')<0:
+        if name.find('-') < 0:
             raise Exception('no separators')
         (taskID,p,d)=name.split('-')
         if p != policytype:
@@ -155,25 +159,29 @@ def conventionCheck(name):
     except Exception as x:
         pass#log.warn("Non-standard config name [%s] (preferred format ID-policytype-domain.cfg)", x.args[0])
 
+
 def getConfigId(configFileName):
     i = configFileName.rfind('.')
-    if i<0 or configFileName[i+1:]!='cfg':
+    if i < 0 or configFileName[i+1:] != 'cfg':
         print ("Config file %s does not have required .cfg extension" % configFileName)
         exit(0)
+
     cfg = path(configFileName)
     if not cfg.isfile():
         print ("Config file %s does not exist" % configFileName)
         exit(0)
     id = configFileName[:i]
     j = id.rfind('/')
-    if j>=0: id = id[j+1:]
+    if j >= 0: id = id[j+1:]
     return id
+
 
 def getOptionalConfigVar(configvarname, default='', section='exec_config'):
     value = default
     if Settings.config.has_option(section, configvarname):
         value = Settings.config.get(section, configvarname)
     return value
+
 
 def getRequiredDirectory(directoryname, section='exec_config'):
     assert Settings.config.has_option(section, directoryname),\
@@ -182,11 +190,13 @@ def getRequiredDirectory(directoryname, section='exec_config'):
     if dir[-1] != '/': dir = dir+'/'
     return dir
 
+
 def getOptionalConfigInt(configvarname, default='0',section='exec_config'):
     value = default
     if Settings.config.has_option(section, configvarname):
         value = Settings.config.getint(section, configvarname)
     return value
+
 
 def getOptionalConfigBool(configvarname, default='False', section='exec_config'):
     value = default
@@ -194,7 +204,8 @@ def getOptionalConfigBool(configvarname, default='False', section='exec_config')
         value = Settings.config.getboolean(section, configvarname)
     return value
 
-def initialise(configId,config_file, seed, mode, trainerrorrate=None, trainsourceiteration=None,
+
+def initialise(configId, config_file, seed, mode, trainerrorrate=None, trainsourceiteration=None,
                numtrainbatches=None, traindialogsperbatch=None, numtestdialogs=None,
                testerrorrate=None, testenderrorrate=None, iteration=None, traindomains=None, testdomains=None,
                dbprefix=None):
@@ -206,11 +217,10 @@ def initialise(configId,config_file, seed, mode, trainerrorrate=None, trainsourc
     global gdeleteprevpolicy, isSingleModel
     global policytypes
 
-
     if seed is not None:
         seed = int(seed)
     seed = Settings.init(config_file, seed)
-    taskID='ID'
+    taskID = 'ID'
 
     isSingleDomain = getOptionalConfigBool("singledomain", isSingleDomain, "GENERAL")
     isSingleModel = getOptionalConfigBool("singlemodel", False, "policycommittee")
@@ -265,7 +275,7 @@ def initialise(configId,config_file, seed, mode, trainerrorrate=None, trainsourc
     if isSingleDomain:
         if policytype != 'hdc':
             if Settings.config.has_section("policy_"+domain):
-                policy_dir = getRequiredDirectory("policydir","policy_"+domain)
+                policy_dir = getRequiredDirectory("policydir", "policy_"+domain)
             else:
                 policy_dir = getRequiredDirectory("policydir", "policy")
             pd = path(policy_dir)
@@ -298,11 +308,11 @@ def initialise(configId,config_file, seed, mode, trainerrorrate=None, trainsourc
     if numtrainbatches:
         gnumtrainbatches = int(numtrainbatches)
     else:
-        gnumtrainbatches = getOptionalConfigInt("numtrainbatches",1)
+        gnumtrainbatches = getOptionalConfigInt("numtrainbatches", 1)
     if traindialogsperbatch:
         gtraindialogsperbatch = int(traindialogsperbatch)
     else:
-        gtraindialogsperbatch = getOptionalConfigInt("traindialogsperbatch",100)
+        gtraindialogsperbatch = getOptionalConfigInt("traindialogsperbatch", 100)
     if trainerrorrate:
         gtrainerrorrate = int(trainerrorrate)
     else:
@@ -330,13 +340,13 @@ def initialise(configId,config_file, seed, mode, trainerrorrate=None, trainsourc
             seed_string = 'seed{}-'.format(seed)
     else:
         seed_string = ''
-    if mode=="train":
+    if mode == "train":
         if gnumtrainbatches>1:
             enditeration = gtrainsourceiteration+gnumtrainbatches
             logfile = "%s-%s%02d.%d-%d.train.log" % (configId, seed_string,gtrainerrorrate,gtrainsourceiteration+1,enditeration)
         else:
             logfile = "%s-%s%02d.%d.train.log" % (configId, seed_string, gtrainerrorrate, gtrainsourceiteration + 1)
-    elif mode=="eval":
+    elif mode == "eval":
         if testenderrorrate:
             logfile = "%s-%s%02d.%d.eval.%02d-%02d.log" % (configId, seed_string,gtrainerrorrate,iteration,
                                                          gtesterrorrate,testenderrorrate)
@@ -345,7 +355,7 @@ def initialise(configId,config_file, seed, mode, trainerrorrate=None, trainsourc
                 logfile = "{}_vs_{}-{}.eval.log".format(configId, iteration, seed_string[:-1])
             else:
                 logfile = "%s-%s%02d.%d.eval.%02d.log" % (configId, seed_string, gtrainerrorrate, iteration, gtesterrorrate)
-    elif mode=="chat":
+    elif mode == "chat":
         logfile = "%s-%s%02d.%d.chat.log" % (configId, seed_string, gtrainerrorrate, gtrainsourceiteration)
     else:
         print "Unknown initialisation mode:",mode
@@ -368,12 +378,13 @@ def initialise(configId,config_file, seed, mode, trainerrorrate=None, trainsourc
         logger = ContextLogger.getLogger('')
 
     Settings.random.seed(int(seed))
-    if Settings.root=='':
+    if Settings.root == '':
         Settings.root = os.getcwd()
     logger.info("Seed = %d", seed)
     logger.info("Root = %s", Settings.root)
 
-def setupPolicy(domain, configId, trainerr, source_iteration,target_iteration, seed=None):
+
+def setupPolicy(domain, configId, trainerr, source_iteration, target_iteration, seed=None):
     if Settings.config.has_section("policy_" + domain):
         policy_section = "policy_" + domain
     else:
@@ -398,12 +409,12 @@ def setupPolicy(domain, configId, trainerr, source_iteration,target_iteration, s
             pd.mkdir()
         Settings.config.set(policy_section, "inpolicyfile", multi_policy_dir + inpolicyfile)
         Settings.config.set(policy_section, "outpolicyfile", multi_policy_dir + outpolicyfile)
-    return (inpolicyfile,outpolicyfile)
+    return (inpolicyfile, outpolicyfile)
 
 
-def trainBatch(domain, configId, trainerr, ndialogs, source_iteration,seed=None):
+def trainBatch(domain, configId, trainerr, ndialogs, source_iteration, seed=None):
     if isSingleDomain:
-        (inpolicy, outpolicy) = setupPolicy(domain, configId, trainerr, source_iteration, source_iteration + 1,seed=seed)
+        (inpolicy, outpolicy) = setupPolicy(domain, configId, trainerr, source_iteration, source_iteration + 1, seed=seed)
         mess = "*** Training Iteration %s->%s: iter=%d, error-rate=%d, num-dialogs=%d ***" % (
             inpolicy, outpolicy, source_iteration, trainerr, ndialogs)
         if tracedialog > 0: print mess
@@ -441,8 +452,8 @@ def trainBatch(domain, configId, trainerr, ndialogs, source_iteration,seed=None)
         confsavefile = conf_dir + multipolicy + ".train.cfg"
 
     # Save the config file for this iteration
-    with open(confsavefile, 'w') as cf:
-        Settings.config.write(cf)
+    cf = open(confsavefile, 'w')
+    Settings.config.write(cf)
     error = float(trainerr) / 100.0
     # run the system
     simulator = Simulate.SimulationSystem(error_rate=error)
@@ -451,17 +462,17 @@ def trainBatch(domain, configId, trainerr, ndialogs, source_iteration,seed=None)
         if isSingleDomain:
             if inpolicy[-1] != '0':
                 if Settings.config.has_section("policy_" + domain):
-                    for f in os.listdir(Settings.config.get('policy_{}'.format(domain),'policydir')):
+                    for f in os.listdir(Settings.config.get('policy_{}'.format(domain), 'policydir')):
                         if re.search(inpolicy, f):
-                            os.remove(os.path.join(Settings.config.get('policy_{}'.format(domain),'policydir'), f))
+                            os.remove(os.path.join(Settings.config.get('policy_{}'.format(domain), 'policydir'), f))
                 else:
-                    for f in os.listdir(Settings.config.get('policy','policydir')):
+                    for f in os.listdir(Settings.config.get('policy', 'policydir')):
                         if re.search(inpolicy, f):
-                            os.remove(os.path.join(Settings.config.get('policy','policydir'), f))
+                            os.remove(os.path.join(Settings.config.get('policy', 'policydir'), f))
 
 
 def setEvalConfig(domain, configId, evalerr, ndialogs, iteration, seed=None):
-    (_, policy) = setupPolicy(domain, configId, gtrainerrorrate, iteration, iteration,seed=seed)
+    (_, policy) = setupPolicy(domain, configId, gtrainerrorrate, iteration, iteration, seed=seed)
     if isSingleDomain:
         mess = "*** Evaluating %s: error-rate=%d num-dialogs=%d ***" % (policy, evalerr, ndialogs)
     else:
@@ -482,8 +493,9 @@ def setEvalConfig(domain, configId, evalerr, ndialogs, iteration, seed=None):
             Settings.config.set("gpsarsa", "scale", "1")
     # Save a copy of config file
     confsavefile = conf_dir + "%s.eval.%02d.cfg" % (policy, evalerr)
-    with open(confsavefile, 'w') as cf: 
-        Settings.config.write(cf)
+    cf = open(confsavefile, 'w')
+    Settings.config.write(cf)
+
 
 def evalPolicy(domain, configId, evalerr, ndialogs, iteration, seed=None):
     if isSingleDomain:
@@ -497,22 +509,26 @@ def evalPolicy(domain, configId, evalerr, ndialogs, iteration, seed=None):
     simulator = Simulate.SimulationSystem(error_rate=error)
     simulator.run_dialogs(ndialogs)
 
-def getIntParam(line,key):
-    m = re.search(" %s *= *(\d+)" % (key), line)
-    if m==None:
-        print "Cant find int %s in %s" % (key,line)
+
+def getIntParam(line, key):
+    m = re.search(" %s *= *(\d+)" % (key), line) #what is this parenthesisi placement here and below???
+    if m is None:
+        print "Cant find int %s in %s" % (key, line)
         exit(0)
     return int(m.group(1))
+
 
 def getFloatRange(line,key):
     m = re.search(" %s *= *(\-?\d+\.\d+) *\+- *(\d+\.\d+)" % (key), line)
     if m==None:
-        print "Cant find float %s in %s" % (key,line)
+        print "Cant find float %s in %s" % (key, line)
         exit(0)
     return (float(m.group(1)),float(m.group(2)))
 
+
 def getDomainFromLog(l):
     return l.split()[-1].split(',')
+
 
 def extractEvalData(lines):
     evalData = {}
@@ -530,75 +546,84 @@ def extractEvalData(lines):
                 if domain not in domain_list:
                     domain_list.append(domain)
                     evalData[domain] = {}
-        if l.find('*** Training Iteration')>=0:
-            iteration = getIntParam(l,'iter')+1
+        if l.find('*** Training Iteration') >= 0:
+            iteration = getIntParam(l, 'iter')+1
             if iteration in evalData.keys():
                 print "Duplicate iteration %d" % iteration
                 exit(0)
             for domain in domain_list:
                 evalData[domain][iteration] = {}
-                evalData[domain][iteration]['erate'] = getIntParam(l,'error-rate')
-                evalData[domain][iteration]['ndialogs'] = getIntParam(l,'num-dialogs')
+                evalData[domain][iteration]['erate'] = getIntParam(l, 'error-rate')
+                evalData[domain][iteration]['ndialogs'] = getIntParam(l, 'num-dialogs')
             training = True
         elif l.find('*** Evaluating')>=0 and not training:
-            erate = getIntParam(l,'error-rate')
+            erate = getIntParam(l, 'error-rate')
             ll = l[l.find('*** Evaluating') + len('*** Evaluating')+1:]
             (ll,x) = ll.split(':')
             for domain in domain_list:
                 if domain in ll:
                     evalData[domain][erate] = {}
                     evalData[domain][erate]['policy'] = ll
-                    evalData[domain][erate]['ndialogs'] = getIntParam(l,'num-dialogs')
-        elif l.find('Results for domain:')>=0:
+                    evalData[domain][erate]['ndialogs'] = getIntParam(l, 'num-dialogs')
+        elif l.find('Results for domain:') >= 0:
             cur_domain = l.split('Results for domain:')[1].split('--')[0].strip()
-        elif l.find('Average reward')>=0:
+        elif l.find('Average reward') >= 0:
             if training:
-                evalData[cur_domain][iteration]['reward'] = getFloatRange(l,'Average reward')
+                evalData[cur_domain][iteration]['reward'] = getFloatRange(l, 'Average reward')
             else:
-                evalData[cur_domain][erate]['reward'] = getFloatRange(l,'Average reward')
-        elif l.find('Average success')>=0:
+                evalData[cur_domain][erate]['reward'] = getFloatRange(l, 'Average reward')
+        elif l.find('Average success') >= 0:
             if training:
                 evalData[cur_domain][iteration]['success'] = getFloatRange(l, 'Average success')
             else:
-                evalData[cur_domain][erate]['success'] = getFloatRange(l,'Average success')
+                evalData[cur_domain][erate]['success'] = getFloatRange(l, 'Average success')
 
-        elif l.find('Average turns')>=0:
+        elif l.find('Average turns') >= 0:
             if training:
                 evalData[cur_domain][iteration]['turns'] = getFloatRange(l, 'Average turns')
             else:
-                evalData[cur_domain][erate]['turns'] = getFloatRange(l,'Average turns')
+                evalData[cur_domain][erate]['turns'] = getFloatRange(l, 'Average turns')
     return evalData
 
-def plotTrain(dname,rtab,stab,block=True,saveplot=False):
+
+def plotTrain(dname, rtab, stab, block=True, saveplot=False):
+    font = {
+            'weight': 'bold',
+            'size': 20}
+    plt.rc('font', **font)
+
     global gplotnum
     policylist = sorted(rtab.keys())
     ncurves = len(policylist)
     plt.figure(gplotnum)
+
     gplotnum += 1
     for policy in policylist:
         tab = rtab[policy]
         plt.subplot(211)
+        plt.xlim((800, 4200))
         if len(tab['x']) < 2:
             plt.axhline(y=tab['y'][0], linestyle='--')
         else:
-            #plt.errorbar(tab['x'],tab['y'], yerr=tab['var'], label=policy)
-            plt.errorbar(tab['x'], tab['y'], label=policy)
+            plt.errorbar(tab['x'],tab['y'], yerr=tab['var'], label=policy)
+            # plt.errorbar(tab['x'], tab['y'], label=policy)
         tab = stab[policy]
         plt.subplot(212)
+        plt.xlim((800, 4200))
         if len(tab['x']) < 2:
             plt.axhline(y=tab['y'][0], linestyle='--')
         else:
-            #plt.errorbar(tab['x'],tab['y'],yerr=tab['var'],label=policy)
-            plt.errorbar(tab['x'], tab['y'], label=policy)
+            plt.errorbar(tab['x'],tab['y'],yerr=tab['var'],label=policy)
+            # plt.errorbar(tab['x'], tab['y'], label=policy)
     plt.subplot(211)
     plt.grid()
-    plt.legend(loc='lower right',fontsize=10)
-    plt.title(dname+" Performance vs Num Train Dialogs")
+    plt.legend(loc='lower right', fontsize=14)  # loc='lower right', best,
+    plt.title("Performance vs Num Train Dialogues")
     plt.ylabel('Reward')
     plt.subplot(212)
     plt.grid()
-    plt.legend(loc='lower right',fontsize=10)
-    plt.xlabel('Num Dialogs')
+    plt.legend(loc='lower right', fontsize=14)
+    plt.xlabel('Num Dialogues')
     plt.ylabel('Success')
     if saveplot:
         if not os.path.exists('_plots'):
@@ -608,7 +633,8 @@ def plotTrain(dname,rtab,stab,block=True,saveplot=False):
     else:
         plt.show(block=block)
 
-def plotTest(dname,rtab,stab,block=True,saveplot=False):
+
+def plotTest(dname, rtab, stab, block=True, saveplot=False):
     global gplotnum
     policylist = sorted(rtab.keys())
     ncurves = len(policylist)
@@ -617,21 +643,22 @@ def plotTest(dname,rtab,stab,block=True,saveplot=False):
     for policy in policylist:
         tab = rtab[policy]
         plt.subplot(211)
-        plt.errorbar(tab['x'],tab['y'],yerr=tab['var'],label=policy)
+        plt.errorbar(tab['x'], tab['y'], yerr=tab['var'], label=policy)
         tab = stab[policy]
         plt.subplot(212)
-        plt.errorbar(tab['x'],tab['y'],yerr=tab['var'],label=policy)
+        plt.errorbar(tab['x'], tab['y'], yerr=tab['var'], label=policy)
     plt.subplot(211)
     plt.grid()
-    plt.legend(loc='lower left',fontsize=12-ncurves)
+    plt.legend(loc='lower left', fontsize=12-ncurves)
     plt.title(dname+" Performance vs Error Rate")
     plt.ylabel('Reward')
     plt.subplot(212)
     plt.grid()
-    plt.legend(loc='lower left',fontsize=12-ncurves)
+    plt.legend(loc='lower left', fontsize=12-ncurves)
     plt.xlabel('Error Rate')
     plt.ylabel('Success')
     plt.show(block=block)
+
 
 def printTable(title, tab):
     firstrow = True
@@ -648,6 +675,7 @@ def printTable(title, tab):
             s+= "%6.1f +-%4.1f" % (tab[policy]['y'][i],tab[policy]['var'][i])
         print s
     print ""
+
 
 def tabulateTrain(dataSet):
     #pp.pprint(dataSet)
@@ -693,7 +721,7 @@ def tabulateTrain(dataSet):
         ttab[policy]['x'] = x
     # average results over seeds
     averaged_result_list = []
-    for result in [rtab,stab,ttab]:
+    for result in [rtab, stab, ttab]:
         averaged_result = {}
         n_seeds = {}
         for policy_key in result:
@@ -720,6 +748,7 @@ def tabulateTrain(dataSet):
 
     return averaged_result_list
 
+
 def tabulateTest(dataSet):
     #pp.pprint(dataSet)
     rtab = {}
@@ -734,10 +763,10 @@ def tabulateTest(dataSet):
             (yr,yrv) = d['reward']
             (ys,ysv) = d['success']
             (yt,ytv) = d['turns']
-            yvals.append((yr,yrv,ys,ysv,yt,ytv))
+            yvals.append((yr, yrv, ys, ysv, yt, ytv))
             xvals.append(erate)
-        yvals = [yy for (xx,yy) in sorted(zip(xvals,yvals))]
-        x = [xx for (xx,yy) in sorted(zip(xvals,yvals))]
+        yvals = [yy for (xx, yy) in sorted(zip(xvals, yvals))]
+        x = [xx for (xx,yy) in sorted(zip(xvals, yvals))]
         if oldx != [] and oldx != x:
             print "Policy %s has inconsistent range of error rates" % policy
             exit(0)
@@ -749,28 +778,30 @@ def tabulateTest(dataSet):
         yturn = [yt for (yr,yrv,ys,ysv,yt,ytv) in yvals]
         yterr = [ytv for (yr,yrv,ys,ysv,yt,ytv) in yvals]
         if not (policy in rtab.keys()): rtab[policy]={}
-        rtab[policy]['y']=yrew
-        rtab[policy]['var']=yrerr
-        rtab[policy]['x']=x
+        rtab[policy]['y'] = yrew
+        rtab[policy]['var'] = yrerr
+        rtab[policy]['x'] = x
         if not (policy in stab.keys()): stab[policy] = {}
-        stab[policy]['y']=ysucc
-        stab[policy]['var']=yserr
-        stab[policy]['x']=x
+        stab[policy]['y'] = ysucc
+        stab[policy]['var'] = yserr
+        stab[policy]['x'] = x
         if not (policy in ttab.keys()): ttab[policy] = {}
-        ttab[policy]['y']=yturn
-        ttab[policy]['var']=yterr
-        ttab[policy]['x']=x
-    return (rtab,stab,ttab)
+        ttab[policy]['y'] = yturn
+        ttab[policy]['var'] = yterr
+        ttab[policy]['x'] = x
+    return rtab, stab, ttab
+
 
 def train_command(configfile, seed=None, trainerrorrate=None,trainsourceiteration=None,
-                  numtrainbatches=None,traindialogsperbatch=None,traindomains=None,dbprefix=None):
+                  numtrainbatches=None, traindialogsperbatch=None, traindomains=None, dbprefix=None):
     """ Train a policy according to the supplied configfile.
         Results are stored in the directories specified in the [exec_config] section of the config file.
         Optional parameters over-ride the corresponding config parameters of the same name.
     """
+
     try:
         if seed and seed.startswith('('):
-            seeds = seed.replace('(','').replace(')','').split(',')
+            seeds = seed.replace('(', '').replace(')', '').split(',')
             if len(seeds) == 2 and int(seeds[0]) < int(seeds[1]):
                 seeds = [str(x) for x in range(int(seeds[0]), 1+int(seeds[1]))]
             for seed in seeds:
@@ -787,7 +818,8 @@ def train_command(configfile, seed=None, trainerrorrate=None,trainsourceiteratio
             initialise(configId,configfile,seed,"train",trainerrorrate=trainerrorrate,
                        trainsourceiteration=trainsourceiteration,numtrainbatches=numtrainbatches,
                        traindialogsperbatch=traindialogsperbatch,traindomains=traindomains,dbprefix=dbprefix)
-            for i in range(gtrainsourceiteration,gtrainsourceiteration+gnumtrainbatches):
+            for i in range(gtrainsourceiteration, gtrainsourceiteration+gnumtrainbatches):
+                Settings.global_numiter = i + 1
                 if isSingleDomain:
                     logger.results('List of domains: {}'.format(domain))
                     trainBatch(domain, configId, gtrainerrorrate, gtraindialogsperbatch, i, seed=seed)
@@ -799,18 +831,19 @@ def train_command(configfile, seed=None, trainerrorrate=None,trainsourceiteratio
                         evalPolicy(domain, configId, gtrainerrorrate, gnumbatchtestdialogs, i + 1, seed=seed)
                     else:
                         evalPolicy(domains, configId, gtrainerrorrate, gnumbatchtestdialogs, i + 1, seed=seed)
-            if gnumbatchtestdialogs>0:
+            if gnumbatchtestdialogs > 0:
                 if isSingleDomain:
                     evalPolicy(domain, configId, gtrainerrorrate, gnumbatchtestdialogs, i + 1, seed=seed)
                 else:
                     evalPolicy(domains, configId, gtrainerrorrate, gnumbatchtestdialogs, i + 1, seed=seed)
 
-            logger.results("*** Training complete. log: %s - final policy is %s-%02d-%02d" % (logfile,configId,gtrainerrorrate,i+1))
+            logger.results("*** Training complete. log: %s - final policy is %s-%02d-%02d" % (logfile, configId, gtrainerrorrate, i+1))
     except clog.ExceptionRaisedByLogger:
-        print "Command Aborted - see Log file for error:",logfile
+        print "Command Aborted - see Log file for error:", logfile
         exit(0)
     except KeyboardInterrupt:
         print "\nCommand Aborted from Keyboard"
+
 
 def test_command(configfile, iteration, seed=None, testerrorrate=None, trainerrorrate=None,
                  numtestdialogs=None, testdomains=None, dbprefix=None, inputpolicy=None):
@@ -828,7 +861,7 @@ def test_command(configfile, iteration, seed=None, testerrorrate=None, trainerro
             for seed in seeds:
                 print '*** Seed {} ***'.format(seed)
                 test_command(configfile, iteration, seed=seed, testerrorrate=testerrorrate,
-                              trainerrorrate=trainerrorrate,numtestdialogs=numtestdialogs,testdomains=testdomains,
+                              trainerrorrate=trainerrorrate, numtestdialogs=numtestdialogs, testdomains=testdomains,
                               dbprefix=dbprefix, inputpolicy=inputpolicy)
 
         else:
@@ -859,7 +892,7 @@ def test_command(configfile, iteration, seed=None, testerrorrate=None, trainerro
             orig_seed = '0'
             if seed:
                 orig_seed = seed
-                seed = int(seed) + 100 # To have a different seed during training and testing
+                seed = int(seed) + 100  # To have a different seed during training and testing
             initialise(configId, configfile, seed, "eval", iteration=i, testerrorrate=testerrorrate,
                        testenderrorrate=enErr, trainerrorrate=trainerrorrate,
                        numtestdialogs=numtestdialogs,testdomains=testdomains, dbprefix=dbprefix)
@@ -910,7 +943,8 @@ def test_command(configfile, iteration, seed=None, testerrorrate=None, trainerro
     except KeyboardInterrupt:
         print "\nCommand Aborted from Keyboard"
 
-def plotTrainLogs(logfilelist,printtab,noplot,saveplot,datasetname,block=True):
+
+def plotTrainLogs(logfilelist, printtab, noplot, saveplot, datasetname, block=True):
     """
         Extract data from given log files and display.
     """
@@ -919,53 +953,53 @@ def plotTrainLogs(logfilelist,printtab,noplot,saveplot,datasetname,block=True):
         ncurves = 0
         domains = None
 
-        if len(logfilelist)<1:
+        if len(logfilelist) < 1:
             print "No log files specified"
             exit(0)
         for fname in logfilelist:
-            try:
-                with open(fname,"r") as fn:
-                    logName = path(fname).namebase
-                    if 'epsil0.' in logName:
-                        logName = logName.replace('epsil0.', 'epsil0')
-                    i = logName.find('.')
-                    if i<0:
-                        print "No index info in train log file name"
-                        exit(0)
-                    curveName = logName[:i]
-                    if datasetname == '':
-                        i = curveName.find('-')
-                        if i>=0:
-                            datasetname=curveName[:i]
-                    lines = fn.read().splitlines()
-                    results = extractEvalData(lines)
-                    npoints = len(results[results.keys()[0]])
-                    if npoints==0:
-                        print "Log file %s has no plotable data" % fname
-                    else:
-                        if len(resultset) == 0:
-                            # the list of domains needs to be read from the logfile
-                            domains = results.keys()
-                            for domain in domains:
-                                resultset[domain] = {}
-                        else:
-                            domains_1 = resultset.keys().sort()
-                            domains_2 = results.keys().sort()
-                            assert domains_1 == domains_2, 'The logfiles have different domains'
-                        ncurves += 1
+            fn = open(fname, "r")
+            if fn:
+                logName = path(fname).namebase
+                if 'epsil0.' in logName:
+                    logName = logName.replace('epsil0.', 'epsil0')
+                i = logName.find('.')
+                if i < 0:
+                    print "No index info in train log file name"
+                    exit(0)
+                curveName = logName[:i]
+                if datasetname == '':
+                    i = curveName.find('-')
+                    if i >= 0:
+                        datasetname=curveName[:i]
+                lines = fn.read().splitlines()
+                results = extractEvalData(lines)
+                npoints = len(results[results.keys()[0]])
+                if npoints == 0:
+                    print "Log file %s has no plotable data" % fname
+                else:
+                    if len(resultset) == 0:
+                        # the list of domains needs to be read from the logfile
+                        domains = results.keys()
                         for domain in domains:
-                            if curveName in resultset[domain].keys():
-                                curve = resultset[domain][curveName]
-                                for iteration in results[domain].keys():
-                                    curve[iteration] = results[domain][iteration]
-                            else:
-                                resultset[domain][curveName] = results[domain]
-            except IOError:
+                            resultset[domain] = {}
+                    else:
+                        domains_1 = resultset.keys().sort()
+                        domains_2 = results.keys().sort()
+                        assert domains_1 == domains_2, 'The logfiles have different domains'
+                    ncurves += 1
+                    for domain in domains:
+                        if curveName in resultset[domain].keys():
+                            curve = resultset[domain][curveName]
+                            for iteration in results[domain].keys():
+                                curve[iteration] = results[domain][iteration]
+                        else:
+                            resultset[domain][curveName] = results[domain]
+            else:
                 print("Cannot find logfile %s" % fname)
-        if ncurves>0:
-            average_results = [[],[],[]]
+        if ncurves > 0:
+            average_results = [[], [], []]
             for domain in domains:
-                (rtab,stab,ttab) = tabulateTrain(resultset[domain])
+                (rtab, stab, ttab) = tabulateTrain(resultset[domain])
                 average_results[0].append(rtab)
                 average_results[1].append(stab)
                 average_results[2].append(ttab)
@@ -994,6 +1028,7 @@ def plotTrainLogs(logfilelist,printtab,noplot,saveplot,datasetname,block=True):
             print("No plotable train data found")
     except clog.ExceptionRaisedByLogger:
         print "Command Aborted - see Log file for error:"
+
 
 def getAverageResults(average_result_list):
     averaged_results = []
@@ -1024,6 +1059,7 @@ def getAverageResults(average_result_list):
         averaged_results.append(tab_av_results)
     return averaged_results
 
+
 def plotTestLogs(logfilelist,printtab,noplot,datasetname,block=True):
     """
         Extract data from given eval log files and display performance
@@ -1033,29 +1069,29 @@ def plotTestLogs(logfilelist,printtab,noplot,datasetname,block=True):
         resultset = {}
         domains = None
         for fname in logfilelist:
-            try:
-                with open(fname,"r") as fn:
-                    lines = fn.read().splitlines()
-                    results = extractEvalData(lines)
-                    if results:
-                        domains = results.keys()
-                        for domain in domains:
-                            resultset[domain] = {}
-                            akey = results[domain].keys()[0]
-                            aresult = results[domain][akey]
-                            if 'policy' in aresult.keys():
-                                policyname = results[domain][akey]['policy']
-                                if datasetname == '':
-                                    i = policyname.find('-')
-                                    if i>=0:
-                                        datasetname=policyname[:i]
-                                if not policyname in resultset[domain]: resultset[domain][policyname]={}
-                                for erate in results[domain].keys():
-                                    resultset[domain][policyname][erate] = results[domain][erate]
-                            else:
-                                print 'Format error in log file',fname
-                                exit(0)
-            except IOError:
+            fn = open(fname,"r")
+            if fn:
+                lines = fn.read().splitlines()
+                results = extractEvalData(lines)
+                if results:
+                    domains = results.keys()
+                    for domain in domains:
+                        resultset[domain] = {}
+                        akey = results[domain].keys()[0]
+                        aresult = results[domain][akey]
+                        if 'policy' in aresult.keys():
+                            policyname = results[domain][akey]['policy']
+                            if datasetname == '':
+                                i = policyname.find('-')
+                                if i >= 0:
+                                    datasetname=policyname[:i]
+                            if not policyname in resultset[domain]: resultset[domain][policyname]={}
+                            for erate in results[domain].keys():
+                                resultset[domain][policyname][erate] = results[domain][erate]
+                        else:
+                            print 'Format error in log file',fname
+                            exit(0)
+            else:
                 print "Cannot find logfile %s" % fname
                 exit(0)
         for domain in domains:
@@ -1075,27 +1111,27 @@ def plotTestLogs(logfilelist,printtab,noplot,datasetname,block=True):
 
 
 @command.fetch_all('args')
-def plot_command(args="",printtab=False,noplot=False,saveplot=False,datasetname=''):
+def plot_command(args="", printtab=False, noplot=False, saveplot=False, datasetname=''):
     """ Call plot with a list of log files and it will print train and test curves.
         For train log files it plots performance vs num dialogs.
         For test log files it plots performance vs error rate.
         Set the printtab option to print a table of results.
         A name can be given to plot via dataset name.
     """
-    trainlogs=[]
-    testlogs=[]
+    trainlogs = []
+    testlogs = []
     for fname in args:
-        if fname.find('train')>=0:
+        if fname.find('train') >= 0:
             trainlogs.append(fname)
-        elif fname.find('eval')>=0:
+        elif fname.find('eval') >= 0:
             testlogs.append(fname)
-    block=True
-    if testlogs: block=False
-    if noplot: printtab=True    # otherwise no point!
+    block = True
+    if testlogs: block = False
+    if noplot: printtab = True    # otherwise no point!
     if trainlogs:
-        plotTrainLogs(trainlogs,printtab,noplot,saveplot,datasetname,block)
+        plotTrainLogs(trainlogs, printtab, noplot, saveplot, datasetname, block)
     if testlogs:
-        plotTestLogs(testlogs,printtab,noplot,saveplot,datasetname)
+        plotTestLogs(testlogs, printtab, noplot, saveplot, datasetname)
 
 
 def chat_command(configfile, seed=None, trainerrorrate=None, trainsourceiteration=None):
@@ -1130,13 +1166,17 @@ def chat_command(configfile, seed=None, trainerrorrate=None, trainsourceiteratio
             logger.dial("*** Chat complete")
             # Save a copy of config file
             confsavefile = conf_dir + configId + ".chat.cfg"
-            with open(confsavefile, 'w') as cf:
-                Settings.config.write(cf)
+            cf = open(confsavefile, 'w')
+            Settings.config.write(cf)
         except clog.ExceptionRaisedByLogger:
-            print "Command Aborted - see Log file for error:",logfile
+            print "Command Aborted - see Log file for error:", logfile
             exit(0)
         except KeyboardInterrupt:
             print "\nCommand Aborted from Keyboard"
 
+
+# class addInfo(object):
+#     def __init__(self, gbatchnum):
+#         self.batch_number = gbatchnum
 
 run()

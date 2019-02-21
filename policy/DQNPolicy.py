@@ -2,7 +2,7 @@
 # PyDial: Multi-domain Statistical Spoken Dialogue System Software
 ###############################################################################
 #
-# Copyright 2015 - 2018
+# Copyright 2015 - 2019
 # Cambridge University Engineering Department Dialogue Systems Group
 #
 # 
@@ -21,50 +21,54 @@
 ###############################################################################
 
 '''
-DQNPolicy.py - Deep Q Network policy
+DQNPolicy.py - deep Q network policy
 ==================================================
 
 Copyright CUED Dialogue Systems Group 2015 - 2017
-
-The implementation of Double Deep Q Network. The algorithm is adapted to incorporate the action mask if needed.
-The details of implementation can be found here: https://arxiv.org/abs/1711.11486
-
-See also:
-https://web.stanford.edu/class/psych209/Readings/MnihEtAlHassibis15NatureControlDeepRL.pdf
 
 .. seealso:: CUED Imports/Dependencies: 
 
     import :class:`Policy`
     import :class:`utils.ContextLogger`
 
+.. warning::
+        Documentation not done.
+
 
 ************************
 
 '''
 
+import cPickle as pickle
 import copy
-import os
-import sys
 import json
 import numpy as np
-import cPickle as pickle
+import os
 import random
-import utils
-from utils.Settings import config as cfg
-from utils import ContextLogger, DiaAct
-
-import ontology.FlatOntologyManager as FlatOnt
+import sys
 import tensorflow as tf
-from DRL.replay_buffer import ReplayBuffer
-from DRL.replay_prioritised import ReplayPrioritised
-import DRL.utils as drlutils
+import time
+
 import DRL.dqn as dqn
+import DRL.utils as drlutils
 import Policy
 import SummaryAction
+import ontology.FlatOntologyManager as FlatOnt
+import utils
+from DRL.replay_buffer import ReplayBuffer
+from DRL.replay_prioritised import ReplayPrioritised
 from Policy import TerminalAction, TerminalState
+from curiosity import model_prediction_curiosity as mpc
+from curiosity.curiosity_module import Curious
 from policy.feudalRL.DIP_parametrisation import DIP_state
+from utils import ContextLogger, DiaAct
+from utils.Settings import config as cfg  # this does not work! TODO
 
-logger = utils.ContextLogger.getLogger('')
+# from model_prediction_curiosity import constants
+
+# logger = utils.ContextLogger.getLogger('')
+logger = ContextLogger.getLogger('')
+
 
 # --- for flattening the belief --- # 
 def flatten_belief(belief, domainUtil, merge=False):
@@ -143,7 +147,6 @@ class DQNPolicy(Policy.Policy):
         self.is_training = is_training
         self.accum_belief = []
 
-        self.domainUtil = FlatOnt.FlatDomainOntology(self.domainString)
         self.prev_state_check = None
 
         # parameter settings
@@ -153,186 +156,197 @@ class DQNPolicy(Policy.Policy):
             self.n_in = self.get_n_in(domainString)
 
         self.learning_rate = 0.001
-        if cfg.has_option('dqnpolicy', 'learning_rate'):
-            self.learning_rate = cfg.getfloat('dqnpolicy', 'learning_rate')
+        if utils.Settings.config.has_option('dqnpolicy', 'learning_rate'):
+            self.learning_rate = utils.Settings.config.getfloat('dqnpolicy', 'learning_rate')
 
         self.tau = 0.001
-        if cfg.has_option('dqnpolicy', 'tau'):
-            self.tau = cfg.getfloat('dqnpolicy', 'tau')
+        if utils.Settings.config.has_option('dqnpolicy', 'tau'):
+            self.tau = utils.Settings.config.getfloat('dqnpolicy', 'tau')
+
+        # self.randomseed = 1234 #TODO cfg import doesn't work anymore therfore i changed all the cfg to u.S.config.
+        # if cfg.has_option('GENERAL', 'seed'):
+        #     self.randomseed = cfg.getint('GENERAL', 'seed') #see same below, this is just kept as example to try
 
         self.randomseed = 1234
-        if cfg.has_option('GENERAL', 'seed'):
-            self.randomseed = cfg.getint('GENERAL', 'seed')
+        if utils.Settings.config.has_option('GENERAL', 'seed'):
+            self.randomseed = utils.Settings.config.getint('GENERAL', 'seed')
 
         self.gamma = 1.0
-        if cfg.has_option('dqnpolicy', 'gamma'):
-            self.gamma = cfg.getfloat('dqnpolicy', 'gamma')
+        if utils.Settings.config.has_option('dqnpolicy', 'gamma'):
+            self.gamma = utils.Settings.config.getfloat('dqnpolicy', 'gamma')
 
         self.regularisation = 'l2'
-        if cfg.has_option('dqnpolicy', 'regularisation'):
-            self.regularisation = cfg.get('dqnpolicy', 'regulariser')
+        if utils.Settings.config.has_option('dqnpolicy', 'regularisation'):
+            self.regularisation = utils.Settings.config.get('dqnpolicy', 'regulariser')
 
         self.exploration_type = 'e-greedy'  # Boltzman
-        if cfg.has_option('dqnpolicy', 'exploration_type'):
-            self.exploration_type = cfg.get('dqnpolicy', 'exploration_type')
+        if utils.Settings.config.has_option('dqnpolicy', 'exploration_type'):
+            self.exploration_type = utils.Settings.config.get('dqnpolicy', 'exploration_type')
 
         self.episodeNum = 1000
-        if cfg.has_option('dqnpolicy', 'episodeNum'):
-            self.episodeNum = cfg.getfloat('dqnpolicy', 'episodeNum')
+        if utils.Settings.config.has_option('dqnpolicy', 'episodeNum'):
+            self.episodeNum = utils.Settings.config.getfloat('dqnpolicy', 'episodeNum')
 
         self.maxiter = 5000
-        if cfg.has_option('dqnpolicy', 'maxiter'):
-            self.maxiter = cfg.getfloat('dqnpolicy', 'maxiter')
+        if utils.Settings.config.has_option('dqnpolicy', 'maxiter'):
+            self.maxiter = utils.Settings.config.getfloat('dqnpolicy', 'maxiter')
 
         self.epsilon = 1
-        if cfg.has_option('dqnpolicy', 'epsilon'):
-            self.epsilon = cfg.getfloat('dqnpolicy', 'epsilon')
+        if utils.Settings.config.has_option('dqnpolicy', 'epsilon'):
+            self.epsilon = utils.Settings.config.getfloat('dqnpolicy', 'epsilon')
 
-        self.epsilon_start = 1
-        if cfg.has_option('dqnpolicy', 'epsilon_start'):
-            self.epsilon_start = cfg.getfloat('dqnpolicy', 'epsilon_start')
+        if not self.curiosityreward:  # no eps-greedy exploration when curious expl. is used
+            self.epsilon_start = 1
+            if cfg.has_option('dqnpolicy', 'epsilon_start'):
+                self.epsilon_start = cfg.getfloat('dqnpolicy', 'epsilon_start')
+        else:
+            self.epsilon_start = 0
 
         self.epsilon_end = 1
-        if cfg.has_option('dqnpolicy', 'epsilon_end'):
-            self.epsilon_end = cfg.getfloat('dqnpolicy', 'epsilon_end')
+        if utils.Settings.config.has_option('dqnpolicy', 'epsilon_end'):
+            self.epsilon_end = utils.Settings.config.getfloat('dqnpolicy', 'epsilon_end')
 
         self.save_step = 100
-        if cfg.has_option('policy', 'save_step'):
-            self.save_step = cfg.getint('policy', 'save_step')
+        if utils.Settings.config.has_option('policy', 'save_step'):
+            self.save_step = utils.Settings.config.getint('policy', 'save_step')
 
         self.priorProbStart = 1.0
-        if cfg.has_option('dqnpolicy', 'prior_sample_prob_start'):
-            self.priorProbStart = cfg.getfloat('dqnpolicy', 'prior_sample_prob_start')
+        if utils.Settings.config.has_option('dqnpolicy', 'prior_sample_prob_start'):
+            self.priorProbStart = utils.Settings.config.getfloat('dqnpolicy', 'prior_sample_prob_start')
 
         self.priorProbEnd = 0.1
-        if cfg.has_option('dqnpolicy', 'prior_sample_prob_end'):
-            self.priorProbEnd = cfg.getfloat('dqnpolicy', 'prior_sample_prob_end')
+        if utils.Settings.config.has_option('dqnpolicy', 'prior_sample_prob_end'):
+            self.priorProbEnd = utils.Settings.config.getfloat('dqnpolicy', 'prior_sample_prob_end')
 
         self.policyfeatures = []
-        if cfg.has_option('dqnpolicy', 'features'):
-            logger.info('Features: ' + str(cfg.get('dqnpolicy', 'features')))
-            self.policyfeatures = json.loads(cfg.get('dqnpolicy', 'features'))
+        if utils.Settings.config.has_option('dqnpolicy', 'features'):
+            logger.info('Features: ' + str(utils.Settings.config.get('dqnpolicy', 'features')))
+            self.policyfeatures = json.loads(utils.Settings.config.get('dqnpolicy', 'features'))
 
         self.max_k = 5
-        if cfg.has_option('dqnpolicy', 'max_k'):
-            self.max_k = cfg.getint('dqnpolicy', 'max_k')
+        if utils.Settings.config.has_option('dqnpolicy', 'max_k'):
+            self.max_k = utils.Settings.config.getint('dqnpolicy', 'max_k')
 
         self.learning_algorithm = 'drl'
-        if cfg.has_option('dqnpolicy', 'learning_algorithm'):
-            self.learning_algorithm = cfg.get('dqnpolicy', 'learning_algorithm')
+        if utils.Settings.config.has_option('dqnpolicy', 'learning_algorithm'):
+            self.learning_algorithm = utils.Settings.config.get('dqnpolicy', 'learning_algorithm')
             logger.info('Learning algorithm: ' + self.learning_algorithm)
 
         self.minibatch_size = 32
-        if cfg.has_option('dqnpolicy', 'minibatch_size'):
-            self.minibatch_size = cfg.getint('dqnpolicy', 'minibatch_size')
+        if utils.Settings.config.has_option('dqnpolicy', 'minibatch_size'):
+            self.minibatch_size = utils.Settings.config.getint('dqnpolicy', 'minibatch_size')
 
         self.capacity = 1000
-        if cfg.has_option('dqnpolicy', 'capacity'):
-            self.capacity = cfg.getint('dqnpolicy', 'capacity')
+        if utils.Settings.config.has_option('dqnpolicy', 'capacity'):
+            self.capacity = utils.Settings.config.getint('dqnpolicy', 'capacity')
 
         self.replay_type = 'vanilla'
-        if cfg.has_option('dqnpolicy', 'replay_type'):
-            self.replay_type = cfg.get('dqnpolicy', 'replay_type')
+        if utils.Settings.config.has_option('dqnpolicy', 'replay_type'):
+            self.replay_type = utils.Settings.config.get('dqnpolicy', 'replay_type')
 
         self.architecture = 'vanilla'
-        if cfg.has_option('dqnpolicy', 'architecture'):
-            self.architecture = cfg.get('dqnpolicy', 'architecture')
+        if utils.Settings.config.has_option('dqnpolicy', 'architecture'):
+            self.architecture = utils.Settings.config.get('dqnpolicy', 'architecture')
             if self.architecture == 'dip':
                 self.architecture = 'dip2'
 
         self.q_update = 'single'
-        if cfg.has_option('dqnpolicy', 'q_update'):
-            self.q_update = cfg.get('dqnpolicy', 'q_update')
+        if utils.Settings.config.has_option('dqnpolicy', 'q_update'):
+            self.q_update = utils.Settings.config.get('dqnpolicy', 'q_update')
 
         self.h1_size = 130
-        if cfg.has_option('dqnpolicy', 'h1_size'):
-            self.h1_size = cfg.getint('dqnpolicy', 'h1_size')
+        if utils.Settings.config.has_option('dqnpolicy', 'h1_size'):
+            self.h1_size = utils.Settings.config.getint('dqnpolicy', 'h1_size')
 
         self.h2_size = 130
-        if cfg.has_option('dqnpolicy', 'h2_size'):
-            self.h2_size = cfg.getint('dqnpolicy', 'h2_size')
+        if utils.Settings.config.has_option('dqnpolicy', 'h2_size'):
+            self.h2_size = utils.Settings.config.getint('dqnpolicy', 'h2_size')
 
         self.training_frequency = 2
-        if cfg.has_option('dqnpolicy', 'training_frequency'):
-            self.training_frequency = cfg.getint('dqnpolicy', 'training_frequency')
+        if utils.Settings.config.has_option('dqnpolicy', 'training_frequency'):
+            self.training_frequency = utils.Settings.config.getint('dqnpolicy', 'training_frequency')
 
         # domain specific parameter settings (overrides general policy parameter settings)
-        if cfg.has_option('dqnpolicy_' + domainString, 'n_in'):
-            self.n_in = cfg.getint('dqnpolicy_' + domainString, 'n_in')
+        if utils.Settings.config.has_option('dqnpolicy_' + domainString, 'n_in'):
+            self.n_in = utils.Settings.config.getint('dqnpolicy_' + domainString, 'n_in')
 
-        if cfg.has_option('dqnpolicy_' + domainString, 'learning_rate'):
-            self.learning_rate = cfg.getfloat('dqnpolicy_' + domainString, 'learning_rate')
+        if utils.Settings.config.has_option('dqnpolicy_' + domainString, 'learning_rate'):
+            self.learning_rate = utils.Settings.config.getfloat('dqnpolicy_' + domainString, 'learning_rate')
 
-        if cfg.has_option('dqnpolicy_' + domainString, 'tau'):
-            self.tau = cfg.getfloat('dqnpolicy_' + domainString, 'tau')
+        if utils.Settings.config.has_option('dqnpolicy_' + domainString, 'tau'):
+            self.tau = utils.Settings.config.getfloat('dqnpolicy_' + domainString, 'tau')
 
-        if cfg.has_option('dqnpolicy_' + domainString, 'gamma'):
-            self.gamma = cfg.getfloat('dqnpolicy_' + domainString, 'gamma')
+        if utils.Settings.config.has_option('dqnpolicy_' + domainString, 'gamma'):
+            self.gamma = utils.Settings.config.getfloat('dqnpolicy_' + domainString, 'gamma')
 
-        if cfg.has_option('dqnpolicy_' + domainString, 'regularisation'):
-            self.regularisation = cfg.get('dqnpolicy_' + domainString, 'regulariser')
+        if utils.Settings.config.has_option('dqnpolicy_' + domainString, 'regularisation'):
+            self.regularisation = utils.Settings.config.get('dqnpolicy_' + domainString, 'regulariser')
 
-        if cfg.has_option('dqnpolicy_' + domainString, 'exploration_type'):
-            self.exploration_type = cfg.get('dqnpolicy_' + domainString, 'exploration_type')
+        if utils.Settings.config.has_option('dqnpolicy_' + domainString, 'exploration_type'):
+            self.exploration_type = utils.Settings.config.get('dqnpolicy_' + domainString, 'exploration_type')
 
-        if cfg.has_option('dqnpolicy_' + domainString, 'episodeNum'):
-            self.episodeNum = cfg.getfloat('dqnpolicy_' + domainString, 'episodeNum')
+        if utils.Settings.config.has_option('dqnpolicy_' + domainString, 'episodeNum'):
+            self.episodeNum = utils.Settings.config.getfloat('dqnpolicy_' + domainString, 'episodeNum')
 
-        if cfg.has_option('dqnpolicy_' + domainString, 'maxiter'):
-            self.maxiter = cfg.getfloat('dqnpolicy_' + domainString, 'maxiter')
+        if utils.Settings.config.has_option('dqnpolicy_' + domainString, 'maxiter'):
+            self.maxiter = utils.Settings.config.getfloat('dqnpolicy_' + domainString, 'maxiter')
 
-        if cfg.has_option('dqnpolicy_' + domainString, 'epsilon'):
-            self.epsilon = cfg.getfloat('dqnpolicy_' + domainString, 'epsilon')
+        if utils.Settings.config.has_option('dqnpolicy_' + domainString, 'epsilon'):
+            self.epsilon = utils.Settings.config.getfloat('dqnpolicy_' + domainString, 'epsilon')
 
-        if cfg.has_option('dqnpolicy_' + domainString, 'epsilon_start'):
-            self.epsilon_start = cfg.getfloat('dqnpolicy_' + domainString, 'epsilon_start')
+        if utils.Settings.config.has_option('dqnpolicy_' + domainString, 'epsilon_start'):
+            self.epsilon_start = utils.Settings.config.getfloat('dqnpolicy_' + domainString, 'epsilon_start')
 
-        if cfg.has_option('dqnpolicy_' + domainString, 'epsilon_end'):
-            self.epsilon_end = cfg.getfloat('dqnpolicy_' + domainString, 'epsilon_end')
+        if utils.Settings.config.has_option('dqnpolicy_' + domainString, 'epsilon_end'):
+            self.epsilon_end = utils.Settings.config.getfloat('dqnpolicy_' + domainString, 'epsilon_end')
 
-        if cfg.has_option('policy_' + domainString, 'save_step'):
-            self.save_step = cfg.getint('policy_' + domainString, 'save_step')
+        if utils.Settings.config.has_option('policy_' + domainString, 'save_step'):
+            self.save_step = utils.Settings.config.getint('policy_' + domainString, 'save_step')
 
-        if cfg.has_option('dqnpolicy_' + domainString, 'prior_sample_prob_start'):
-            self.priorProbStart = cfg.getfloat('dqnpolicy_' + domainString, 'prior_sample_prob_start')
+        if utils.Settings.config.has_option('dqnpolicy_' + domainString, 'prior_sample_prob_start'):
+            self.priorProbStart = utils.Settings.config.getfloat('dqnpolicy_' + domainString, 'prior_sample_prob_start')
 
-        if cfg.has_option('dqnpolicy_' + domainString, 'prior_sample_prob_end'):
-            self.priorProbEnd = cfg.getfloat('dqnpolicy_' + domainString, 'prior_sample_prob_end')
+        if utils.Settings.config.has_option('dqnpolicy_' + domainString, 'prior_sample_prob_end'):
+            self.priorProbEnd = utils.Settings.config.getfloat('dqnpolicy_' + domainString, 'prior_sample_prob_end')
 
-        if cfg.has_option('dqnpolicy_' + domainString, 'features'):
-            logger.info('Features: ' + str(cfg.get('dqnpolicy_' + domainString, 'features')))
-            self.policyfeatures = json.loads(cfg.get('dqnpolicy_' + domainString, 'features'))
+        if utils.Settings.config.has_option('dqnpolicy_' + domainString, 'features'):
+            logger.info('Features: ' + str(utils.Settings.config.get('dqnpolicy_' + domainString, 'features')))
+            self.policyfeatures = json.loads(utils.Settings.config.get('dqnpolicy_' + domainString, 'features'))
 
-        if cfg.has_option('dqnpolicy_' + domainString, 'max_k'):
-            self.max_k = cfg.getint('dqnpolicy_' + domainString, 'max_k')
+        if utils.Settings.config.has_option('dqnpolicy_' + domainString, 'max_k'):
+            self.max_k = utils.Settings.config.getint('dqnpolicy_' + domainString, 'max_k')
 
-        if cfg.has_option('dqnpolicy_' + domainString, 'learning_algorithm'):
-            self.learning_algorithm = cfg.get('dqnpolicy_' + domainString, 'learning_algorithm')
+        if utils.Settings.config.has_option('dqnpolicy_' + domainString, 'learning_algorithm'):
+            self.learning_algorithm = utils.Settings.config.get('dqnpolicy_' + domainString, 'learning_algorithm')
             logger.info('Learning algorithm: ' + self.learning_algorithm)
 
-        if cfg.has_option('dqnpolicy_' + domainString, 'minibatch_size'):
-            self.minibatch_size = cfg.getint('dqnpolicy_' + domainString, 'minibatch_size')
+        if utils.Settings.config.has_option('dqnpolicy_' + domainString, 'minibatch_size'):
+            self.minibatch_size = utils.Settings.config.getint('dqnpolicy_' + domainString, 'minibatch_size')
 
-        if cfg.has_option('dqnpolicy_' + domainString, 'capacity'):
-            self.capacity = cfg.getint('dqnpolicy_' + domainString, 'capacity')
+        if utils.Settings.config.has_option('dqnpolicy_' + domainString, 'capacity'):
+            self.capacity = utils.Settings.config.getint('dqnpolicy_' + domainString, 'capacity')
 
-        if cfg.has_option('dqnpolicy_' + domainString, 'replay_type'):
-            self.replay_type = cfg.get('dqnpolicy_' + domainString, 'replay_type')
+        if utils.Settings.config.has_option('dqnpolicy_' + domainString, 'replay_type'):
+            self.replay_type = utils.Settings.config.get('dqnpolicy_' + domainString, 'replay_type')
 
-        if cfg.has_option('dqnpolicy_' + domainString, 'architecture'):
-            self.architecture = cfg.get('dqnpolicy_' + domainString, 'architecture')
+        if utils.Settings.config.has_option('dqnpolicy_' + domainString, 'architecture'):
+            self.architecture = utils.Settings.config.get('dqnpolicy_' + domainString, 'architecture')
 
-        if cfg.has_option('dqnpolicy_' + domainString, 'q_update'):
-            self.q_update = cfg.get('dqnpolicy_' + domainString, 'q_update')
+        if utils.Settings.config.has_option('dqnpolicy_' + domainString, 'q_update'):
+            self.q_update = utils.Settings.config.get('dqnpolicy_' + domainString, 'q_update')
 
-        if cfg.has_option('dqnpolicy_' + domainString, 'h1_size'):
-            self.h1_size = cfg.getint('dqnpolicy_' + domainString, 'h1_size')
+        if utils.Settings.config.has_option('dqnpolicy_' + domainString, 'h1_size'):
+            self.h1_size = utils.Settings.config.getint('dqnpolicy_' + domainString, 'h1_size')
 
-        if cfg.has_option('dqnpolicy_' + domainString, 'h2_size'):
-            self.h2_size = cfg.getint('dqnpolicy_' + domainString, 'h2_size')
+        if utils.Settings.config.has_option('dqnpolicy_' + domainString, 'h2_size'):
+            self.h2_size = utils.Settings.config.getint('dqnpolicy_' + domainString, 'h2_size')
 
-        if cfg.has_option('dqnpolicy_' + domainString, 'training_frequency'):
-            self.training_frequency = cfg.getint('dqnpolicy_' + domainString, 'training_frequency')
+        if utils.Settings.config.has_option('dqnpolicy_' + domainString, 'training_frequency'):
+            self.training_frequency = utils.Settings.config.getint('dqnpolicy_' + domainString, 'training_frequency')
+
+        self.curiosityreward = False
+        if utils.Settings.config.has_option('eval', 'curiosityreward'):
+            self.curiosityreward = utils.Settings.config.getboolean('eval', 'curiosityreward')
 
         """
         self.shuffle = False
@@ -346,17 +360,18 @@ class DQNPolicy(Policy.Policy):
         """
 
         self.episode_ave_max_q = []
+        self.curiositypred_loss = []
 
         os.environ["CUDA_VISIBLE_DEVICES"] = ""
         policytype = 'dqn'
         self.dropout_rate = 0.
-        if cfg.has_option('dqnpolicy', 'dropout_rate'):
-            self.dropout_rate = cfg.getfloat('dqnpolicy', 'dropout_rate')
-        if cfg.has_option('policy', 'policytype'):
-            policytype = cfg.get('policy', 'policytype')
+        if utils.Settings.config.has_option('dqnpolicy', 'dropout_rate'):
+            self.dropout_rate = utils.Settings.config.getfloat('dqnpolicy', 'dropout_rate')
+        if utils.Settings.config.has_option('policy', 'policytype'):
+            policytype = utils.Settings.config.get('policy', 'policytype')
         if policytype != 'feudal':
-            # init session
             self.sess = tf.Session()
+
             with tf.device("/cpu:0"):
 
                 np.random.seed(self.randomseed)
@@ -396,6 +411,7 @@ class DQNPolicy(Policy.Policy):
                 self.loadPolicy(self.in_policy_file)
                 print 'loaded replay size: ', self.episodes[self.domainString].size()
 
+                self.curiosityFunctions = Curious()
                 self.dqn.update_target_network()
 
     def get_n_in(self, domain_string):
@@ -416,10 +432,10 @@ class DQNPolicy(Policy.Policy):
         else:
             print 'DOMAIN {} SIZE NOT SPECIFIED, PLEASE DEFINE n_in'.format(domain_string)
 
-
     def act_on(self, state, hyps=None):
         if self.lastSystemAction is None and self.startwithhello:
             systemAct, nextaIdex = 'hello()', -1
+            self.prev_state = state
         else:
             systemAct, nextaIdex = self.nextAction(state)
         self.lastSystemAction = systemAct
@@ -427,6 +443,7 @@ class DQNPolicy(Policy.Policy):
         self.prevbelief = state
 
         systemAct = DiaAct.DiaAct(systemAct)
+
         return systemAct
 
     def record(self, reward, domainInControl=None, weight=None, state=None, action=None):
@@ -703,7 +720,9 @@ class DQNPolicy(Policy.Policy):
             s_batch = np.vstack([np.expand_dims(x, 0) for x in s_batch])
             s2_batch = np.vstack([np.expand_dims(x, 0) for x in s2_batch])
 
+            # change index-based a_batch to one-hot-based a_batch
             a_batch_one_hot = np.eye(self.action_dim, self.action_dim)[a_batch]
+
             # target_q = self.dqn.predict_target_with_action_maxQ(s2_batch)
             if self.architecture != 'dip':
                 action_q = self.dqn.predict(s2_batch)
@@ -712,7 +731,6 @@ class DQNPolicy(Policy.Policy):
                 action_q = self.dqn.predict_dip(s2_batch, a_batch_one_hot)
                 target_q = self.dqn.predict_target_dip(s2_batch, a_batch_one_hot)
             #print 'action Q and target Q:', action_q, target_q
-
 
             y_i = []
             for k in xrange(min(self.minibatch_size, self.episodes[self.domainString].size())):
@@ -742,24 +760,14 @@ class DQNPolicy(Policy.Policy):
                     error = abs(currentQ_s_a_ - Q_bootstrap_label)
                     self.episodes[self.domainString].update(idx_batch[k], error)
 
-            # change index-based a_batch to one-hot-based a_batch
-            #a_batch_one_hot = np.eye(self.action_dim, self.action_dim)[a_batch]
-
             # Update the critic given the targets
             reshaped_yi = np.vstack([np.expand_dims(x, 0) for x in y_i])
 
-            # reshaped_yi = np.reshape(y_i, (min(self.minibatch_size, self.episodes[self.domainString].size()), 1))
-            #print reshaped_yi.shape[0]
-            #print self.episodes[self.domainString].size()
-            predicted_q_value, _, currentLoss = self.dqn.train(s_batch, a_batch_one_hot, reshaped_yi)
-            #print 'pred V and loss:', predicted_q_value, currentLoss
+            if self.curiosityreward:
+                curiosity_loss = self.curiosityFunctions.training(s2_batch, s_batch, a_batch_one_hot)
+                # self.curiositypred_loss.append(curiosity_loss)  # for plotting
 
-
-            #print 'y_i'
-            #print y_i
-            #print 'currentLoss', currentLoss
-            #print 'predict Q'
-            #print predicted_q_value
+            predicted_q_value, currentLoss = self.dqn.train(s_batch, a_batch_one_hot, reshaped_yi)
 
             if self.episodecount % 1 == 0:
                 # Update target networks
@@ -780,10 +788,9 @@ class DQNPolicy(Policy.Policy):
         """
 
         if self.episodecount % self.save_step == 0:
-            #print "episode", self.episodecount
+            # print "episode", self.episodecount
             # save_path = self.saver.save(self.sess, self.out_policy_file+'.ckpt')
             self.dqn.save_network(self.out_policy_file + '.dqn.ckpt')
-
             f = open(self.out_policy_file + '.episode', 'wb')
             for obj in [self.samplecount, self.episodes[self.domainString]]:
                 pickle.dump(obj, f, protocol=pickle.HIGHEST_PROTOCOL)

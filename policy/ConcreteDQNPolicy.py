@@ -2,7 +2,7 @@
 # PyDial: Multi-domain Statistical Spoken Dialogue System Software
 ###############################################################################
 #
-# Copyright 2015 - 2018
+# Copyright 2015 - 2019
 # Cambridge University Engineering Department Dialogue Systems Group
 #
 #

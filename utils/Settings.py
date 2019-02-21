@@ -2,7 +2,7 @@
 # PyDial: Multi-domain Statistical Spoken Dialogue System Software
 ###############################################################################
 #
-# Copyright 2015 - 2018
+# Copyright 2015 - 2019
 # Cambridge University Engineering Department Dialogue Systems Group
 #
 # 
@@ -62,11 +62,14 @@ random = None
 randomCount = 0
 root = ''
 global_currentturn = None
+global_numiter = None
+global_sess = None
+
 
 #==============================================================================================================
 # Methods (for settings globals)
 #==============================================================================================================
-def init(config_file, seed = None):
+def init(config_file, seed=None):
     '''
     Called by dialog programs (simulate, texthub, dialogueserver) to init Settings globals
     '''
@@ -82,11 +85,12 @@ def init(config_file, seed = None):
     #-----------------------------------------
     if seed is None:
         # no seed given at cmd line (the overriding input), so check config for a seed, else use None (which means use clock).    
-        if config.has_option("GENERAL",'seed'):
-            seed = config.getint("GENERAL","seed")
+        if config.has_option("GENERAL", 'seed'):
+            seed = config.getint("GENERAL", "seed")
     seed = set_seed(seed)
 
     return seed
+
 
 def load_config(config_file):
     '''
@@ -106,6 +110,7 @@ def load_config(config_file):
     else:
         # load empty config
         config = ConfigParser.ConfigParser()
+
 
 def load_root(rootIn=None):
     '''

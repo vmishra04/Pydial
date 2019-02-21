@@ -2,7 +2,7 @@
 # PyDial: Multi-domain Statistical Spoken Dialogue System Software
 ###############################################################################
 #
-# Copyright 2015 - 2018
+# Copyright 2015 - 2019
 # Cambridge University Engineering Department Dialogue Systems Group
 #
 # 
@@ -45,29 +45,31 @@ https://arxiv.org/abs/1606.02647
 ************************
 
 '''
+import cPickle as pickle
 import copy
-import os
 import json
 import numpy as np
+import os
+import random
 import scipy
 import scipy.signal
-import cPickle as pickle
-import random
-import utils
-from utils.Settings import config as cfg
-from utils import ContextLogger, DiaAct
-
-import ontology.FlatOntologyManager as FlatOnt
 import tensorflow as tf
-from DRL.replay_buffer_episode_acer import ReplayBufferEpisode
-from DRL.replay_prioritised_episode import ReplayPrioritisedEpisode
-import DRL.utils as drlutils
+
 import DRL.acer as acer
+import DRL.utils as drlutils
 import Policy
 import SummaryAction
+import ontology.FlatOntologyManager as FlatOnt
+import utils
+from DRL.replay_buffer_episode_acer import ReplayBufferEpisode
+from DRL.replay_prioritised_episode import ReplayPrioritisedEpisode
 from Policy import TerminalAction, TerminalState
+from curiosity.curiosity_module import Curious
+from utils import ContextLogger, DiaAct
+from utils.Settings import config as cfg
 
 logger = utils.ContextLogger.getLogger('')
+
 
 # --- for flattening the belief --- #
 def flatten_belief(belief, domainUtil, merge=False):
@@ -134,8 +136,10 @@ def flatten_belief(belief, domainUtil, merge=False):
 def discount(x, gamma):
     return scipy.signal.lfilter([1], [1, -gamma], x[::-1], axis=0)[::-1]
 
+
 class ACERPolicy(Policy.Policy):
-    '''Derived from :class:`Policy`
+    '''
+    Derived from :class:`Policy`
     '''
     def __init__(self, in_policy_file, out_policy_file, domainString='CamRestaurants', is_training=False):
         super(ACERPolicy, self).__init__(domainString, is_training)
@@ -194,7 +198,7 @@ class ACERPolicy(Policy.Policy):
         if cfg.has_option('dqnpolicy', 'learning_rate'):
             self.learning_rate = cfg.getfloat('dqnpolicy', 'learning_rate')
 
-        self.exploration_type = 'e-greedy' # Boltzman
+        self.exploration_type = 'e-greedy'  # Boltzman
         if cfg.has_option('dqnpolicy', 'exploration_type'):
             self.exploration_type = cfg.get('dqnpolicy', 'exploration_type')
 
@@ -206,13 +210,20 @@ class ACERPolicy(Policy.Policy):
         if cfg.has_option('dqnpolicy', 'maxiter'):
             self.maxiter = cfg.getfloat('dqnpolicy', 'maxiter')
 
+        self.curiosityreward = False
+        if cfg.has_option('eval', 'curiosityreward'):
+            self.curiosityreward = cfg.getboolean('eval', 'curiosityreward')
+
         self.epsilon = 1
         if cfg.has_option('dqnpolicy', 'epsilon'):
             self.epsilon = cfg.getfloat('dqnpolicy', 'epsilon')
 
-        self.epsilon_start = 1
-        if cfg.has_option('dqnpolicy', 'epsilon_start'):
-            self.epsilon_start = cfg.getfloat('dqnpolicy', 'epsilon_start')
+        if not self.curiosityreward:  # no eps-greedy exploration when curious expl. is used
+            self.epsilon_start = 1
+            if cfg.has_option('dqnpolicy', 'epsilon_start'):
+                self.epsilon_start = cfg.getfloat('dqnpolicy', 'epsilon_start')
+        else:
+            self.epsilon_start = 0
 
         self.epsilon_end = 1
         if cfg.has_option('dqnpolicy', 'epsilon_end'):
@@ -380,13 +391,12 @@ class ACERPolicy(Policy.Policy):
         if cfg.has_option('dqnpolicy_'+domainString, 'training_frequency'):
             self.training_frequency = cfg.getint('dqnpolicy_'+domainString, 'training_frequency')
 
-
         self.episode_ct = 0
 
         self.episode_ave_max_q = []
         self.mu_prob = 0.  # behavioral policy
 
-        #os.environ["CUDA_VISIBLE_DEVICES"]=""
+        # os.environ["CUDA_VISIBLE_DEVICES"]=""
 
         # init session
         self.sess = tf.Session()
@@ -424,7 +434,27 @@ class ACERPolicy(Policy.Policy):
             self.loadPolicy(self.in_policy_file)
             print 'loaded replay size: ', self.episodes[self.domainString].size()
 
+            if self.curiosityreward:
+                self.curiosityFunctions = Curious()
             #self.acer.update_target_network()
+
+    def get_n_in(self, domain_string):
+        if domain_string == 'CamRestaurants':
+            return 268
+        elif domain_string == 'CamHotels':
+            return 111
+        elif domain_string == 'SFRestaurants':
+            return 636
+        elif domain_string == 'SFHotels':
+            return 438
+        elif domain_string == 'Laptops6':
+            return 268 # ic340: this is wrong
+        elif domain_string == 'Laptops11':
+            return 257
+        elif domain_string is 'TV':
+            return 188
+        else:
+            print 'DOMAIN {} SIZE NOT SPECIFIED, PLEASE DEFINE n_in'.format(domain_string)
 
     def get_n_in(self, domain_string):
         if domain_string == 'CamRestaurants':
@@ -475,8 +505,11 @@ class ACERPolicy(Policy.Policy):
         cState, cAction = self.convertStateAction(state, action)
 
         # normalising total return to -1~1
+        #reward /= 40.0
         reward /= 20.0
-
+        """
+        reward = float(reward+10.0)/40.0
+        """
         value = self.acer.predict_value([cState], [mask])
 
         if self.replay_type == 'vanilla':
@@ -505,7 +538,7 @@ class ACERPolicy(Policy.Policy):
         reward /= 20.0
 
         terminal_state, terminal_action = self.convertStateAction(TerminalState(), TerminalAction())
-        value = 0.0 # not effect on experience replay
+        value = 0.0  # not effect on experience replay
 
         def calculate_discountR_advantage(r_episode, v_episode):
             #########################################################################
@@ -618,9 +651,6 @@ class ACERPolicy(Policy.Policy):
         else:
             logger.info("Update acer policy parameters.")
 
-        import time
-        start = time.time()
-
         self.episodecount += 1
         logger.info("Sample Num so far: %s" % (self.samplecount))
         logger.info("Episode Num so far: %s" % (self.episodecount))
@@ -632,7 +662,6 @@ class ACERPolicy(Policy.Policy):
             logger.info('start trainig...')
 
             for _ in range(self.train_iters_per_episode):
-
 
                 if self.replay_type == 'vanilla' or self.replay_type == 'prioritized':
                     s_batch, s_ori_batch, a_batch, r_batch, s2_batch, s2_ori_batch, t_batch, idx_batch, v_batch, mu_policy, mask_batch = \
@@ -647,6 +676,7 @@ class ACERPolicy(Policy.Policy):
 
                 discounted_r_batch = []
                 advantage_batch = []
+
                 def calculate_discountR_advantage(r_episode, v_episode):
                     #########################################################################
                     # Here we take the rewards and values from the rolloutv, and use them to
@@ -689,12 +719,18 @@ class ACERPolicy(Policy.Policy):
 
                 a_batch_one_hot = np.eye(self.action_dim)[np.concatenate(a_batch, axis=0).tolist()]
 
+                # train curiosity model (Paula)
+                if self.curiosityreward:
+                        self.curiosityFunctions.training(np.concatenate(np.array(s2_batch), axis=0).tolist(),
+                                                         np.concatenate(np.array(s_batch), axis=0).tolist(),
+                                                         a_batch_one_hot)
+
                 loss, entropy, optimize = \
-                            self.acer.train(np.concatenate(np.array(s_batch), axis=0).tolist(), a_batch_one_hot,
-                                            np.concatenate(np.array(mask_batch), axis=0).tolist(),
-                                            np.concatenate(np.array(r_batch), axis=0).tolist(), s_batch, r_batch, self.gamma,
-                                            np.concatenate(np.array(mu_policy), axis=0),
-                                            discounted_r_batch, advantage_batch)
+                    self.acer.train(np.concatenate(np.array(s_batch), axis=0).tolist(), a_batch_one_hot,
+                                    np.concatenate(np.array(mask_batch), axis=0).tolist(),
+                                    np.concatenate(np.array(r_batch), axis=0).tolist(), s_batch, r_batch, self.gamma,
+                                    np.concatenate(np.array(mu_policy), axis=0),
+                                    discounted_r_batch, advantage_batch)
 
                 ent, norm_loss = entropy/float(batch_size), loss/float(batch_size)
 
@@ -706,9 +742,6 @@ class ACERPolicy(Policy.Policy):
             #    self.acer.update_target_network()
 
             self.savePolicyInc()  # self.out_policy_file)
-
-            end = time.time()
-            #print >> sys.stderr, 'training took %s' % str(end - start)
 
     def savePolicy(self, FORCE_SAVE=False):
         """
@@ -722,14 +755,16 @@ class ACERPolicy(Policy.Policy):
         save model and replay buffer
         """
         if self.episodecount % self.save_step == 0:
-            #save_path = self.saver.save(self.sess, self.out_policy_file+'.ckpt')
+            # save_path = self.saver.save(self.sess, self.out_policy_file+'.ckpt')
             self.acer.save_network(self.out_policy_file+'.acer.ckpt')
+            if self.curiosityreward:
+                self.curiosityFunctions.save_ICM('_curiosity_model/ckpt-curiosity')
 
             f = open(self.out_policy_file+'.episode', 'wb')
-            for obj in [self.samplecount, self.episodes[self.domainString], self.global_mu]:
+            for obj in [self.episodecount, self.episodes[self.domainString], self.global_mu]:
                 pickle.dump(obj, f, protocol=pickle.HIGHEST_PROTOCOL)
             f.close()
-            #logger.info("Saving model to %s and replay buffer..." % save_path)
+            # logger.info("Saving model to %s and replay buffer..." % save_path)
 
     def loadPolicy(self, filename):
         """
@@ -737,15 +772,14 @@ class ACERPolicy(Policy.Policy):
         """
         # load models
         self.acer.load_network(filename+'.acer.ckpt')
-
         # load replay buffer
         try:
             print 'laod from: ', filename
             f = open(filename+'.episode', 'rb')
             loaded_objects = []
-            for i in range(2): # load nn params and collected data
+            for i in range(2):  # load nn params and collected data
                 loaded_objects.append(pickle.load(f))
-            self.samplecount = int(loaded_objects[0])
+            self.episodecount = int(loaded_objects[0])
             self.episodes[self.domainString] = copy.deepcopy(loaded_objects[1])
             self.global_mu = loaded_objects[2]
             logger.info("Loading both model from %s and replay buffer..." % filename)
@@ -761,9 +795,9 @@ class ACERPolicy(Policy.Policy):
         self.prev_mask = None
         self.actToBeRecorded = None
         self.epsilon = self.epsilon_start - (self.epsilon_start - self.epsilon_end) * float(self.episodeNum+self.episodecount) / float(self.maxiter)
-        #print 'current eps', self.epsilon
-        #self.episodes = dict.fromkeys(OntologyUtils.available_domains, None)
-        #self.episodes[self.domainString] = ReplayBuffer(self.capacity, self.randomseed)
+        # print 'current eps', self.epsilon
+        # self.episodes = dict.fromkeys(OntologyUtils.available_domains, None)
+        # self.episodes[self.domainString] = ReplayBuffer(self.capacity, self.randomseed)
         self.episode_ave_max_q = []
 
-#END OF FILE
+# END OF FILE
