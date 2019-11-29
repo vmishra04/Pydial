@@ -3,15 +3,14 @@ Pydial
 
 The below is an example chat for recruitment case with the final aim of sending CV in a link
 
-![Image of chat]
-(https://github.com/vmishra04/Pydial/blob/master/Screen%20Shot%202019-11-28%20at%2011.59.01%20PM.png)
+![Image of chat](https://github.com/vmishra04/Pydial/blob/master/Screen%20Shot%202019-11-28%20at%2011.59.01%20PM.png)
 
 
 This is a single domain example called Recruitment
 
 Some important files to create domain are:
 
-* config/Tut-hdc-recruitment.cfg: Contains config inforamtion for chat
+* config/Tut-hdc-recruitment.cfg: Contains config information for chat
 * ontology/ontologies/recruitment-rules.json : Contains slots that can be requested along with data to be provided,
 in this case the URL for CV
 * semi/RegexSemi_recruitment.py: Contains regex information for the slots
