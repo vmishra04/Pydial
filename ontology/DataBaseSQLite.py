@@ -61,6 +61,7 @@ class DataBase_SQLite(DataBaseINTERFACE):
     further if desired. 
     '''
     def __init__(self, dbfile, dstring):
+	logger.info(dbfile)
         self._loaddb(dbfile)
         self.domain = dstring
         self.no_constraints_sql_query = '''select  * 
@@ -132,6 +133,7 @@ class DataBase_SQLite(DataBaseINTERFACE):
                     doRand = True
             except Exception as e:
                 print e     # hold to debug here
+                logger.debug(sql_query)
                 logger.error('sql error ' + str(e))
                 
                 
@@ -142,6 +144,7 @@ class DataBase_SQLite(DataBaseINTERFACE):
             
             # 2. Finalise and Execute sql_query
             sql_query =  self.no_constraints_sql_query
+            #logger.info(sql_query)
             self.cursor.execute(sql_query)
             doRand = True
         

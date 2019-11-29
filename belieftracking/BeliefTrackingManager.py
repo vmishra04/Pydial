@@ -73,6 +73,9 @@ class BeliefTrackingManager(object):
         '''
         Update belief state given infos
         '''
+	logger.info(lastSysAct)
+	logger.info(inputActs)
+	logger.info(constraints)
         return self.domainBeliefTrackers[dstring].update_belief_state(lastSysAct, inputActs, constraints)
 
     def bootup(self, domainString, previousDomainString=None):

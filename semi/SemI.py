@@ -193,6 +193,7 @@ class SemIManager(object):
         #---------------------------------------------------  
         
         # Additional argument turn as described above
+	logger.info(sys_act)
         hyps = self.semiManagers[domainTag].decode(ASR_obs, sys_act, turn=turn)
         logger.info(hyps)
         # add context if required

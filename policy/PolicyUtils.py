@@ -75,10 +75,11 @@ def getGlobalAction(belief, globalact, domainString):
     :type domainString: str
     :returns: (str) action
     '''
-
+    
+    #return belief['userActs'][0][0]
     # First get the name for the name goal.
-    topvalue, topbelief = SummaryUtils.getTopBelief(belief['beliefs']['name'])
-    toptwo, _ = SummaryUtils.getTopBeliefsExcludingNone(belief['beliefs']['name'])
+    topvalue, topbelief = SummaryUtils.getTopBelief(belief['beliefs']['discourseAct'])
+    toptwo, _ = SummaryUtils.getTopBeliefsExcludingNone(belief['beliefs']['discourseAct'])
     if topvalue == '**NONE**' or topvalue == 'dontcare' or topbelief < 0.8:
         topnamevalue = ''
     else:
@@ -129,6 +130,8 @@ def getGlobalAction(belief, globalact, domainString):
             return 'null()'
     elif globalact == 'BYE':
         return 'bye()'
+    elif globalact == 'OPEN':
+        return 'open()'
     elif globalact == 'RESTART':
         return 'null()'
     else:
@@ -199,9 +202,11 @@ def getInformAcceptedSlotsAboutEntity(acceptanceList, ent, numFeats):
     :type numFeats: int
     :returns: (str) filled out inform() act
     '''
-
+    logger.info(ent)
+    logger.info(acceptanceList)
+    logger.info(numFeats)
     ans = 'inform('
-    feats = {'name': ent['name']}
+    feats = {'name': ent['url']}
     acceptanceKeys = acceptanceList.keys()
 
     maxNumFeats = 5

@@ -102,6 +102,7 @@ class BeliefTracker(object):
 
         :return: dict -- previous belief state
         '''
+	logger.info("update belief in tracker called:")
         curturn = self._convertHypToTurn(lastact, obs)
         last_feature = None
 
@@ -110,8 +111,9 @@ class BeliefTracker(object):
  
         if self.turn == 0:
             self.prevbelief = self._init_belief(constraints)
-
+	
         self.prevbelief = self._updateBelief(curturn)
+#	logger.debug(self.str())
 #         self._print_belief()
 
         logger.debug(pprint.pformat(curturn))
@@ -198,9 +200,12 @@ class BeliefTracker(object):
                                                          user=False)
         curturn['output'] = {'dialog-acts': slastact}
 
+	logger.info(curturn)
+
         # User act hyps
         accumulated = defaultdict(float)
         for (hyp, prob) in obs:
+	    logger.info(hyp)
             hyp = dact.ParseAct(hyp)
             hyp = BeliefTrackingUtils._transformAct(hyp, {}, Ontology.global_ontology.get_ontology(self.domainString))
             hyp = dact.inferSlotsForAct(hyp)

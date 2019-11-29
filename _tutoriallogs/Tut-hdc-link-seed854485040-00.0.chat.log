@@ -1,0 +1,379 @@
+INFO   :: 01:39:52: root                       FlatOntologyManager.py <_set_ontology>93 :  Loading ontology: ontology/ontologies/link-rules.json
+INFO   :: 01:39:52: root                            FlatOntologyManager.py <_set_db>109 :  Loading database: ontology/ontologies/link-dbase.db
+INFO   :: 01:39:52: root                                 DataBaseSQLite.py <__init__>64 :  ontology/ontologies/link-dbase.db
+INFO   :: 01:39:52: root                                         pydial <initialise>383 :  Seed = 854485040
+INFO   :: 01:39:52: root                                         pydial <initialise>384 :  Root = /home/ubuntu/pydial
+DIAL   :: 01:39:52: root                                      pydial <chat_command>1161 :  *** Chatting with policies ['link']: ***
+INFO   :: 01:39:52: root                                    Agent.py <_hand_control>460 :  Launching Dialogue Manager for domain: topicmanager
+WARNING:: 01:39:52: root                                      RegexSemI.py <__init__>80 :  No rTYPE regex has been set.
+WARNING:: 01:39:52: root                                      RegexSemI.py <__init__>80 :  No rTYPE regex has been set.
+WARNING:: 01:39:52: root                                      RegexSemI.py <__init__>80 :  No rTYPE regex has been set.
+WARNING:: 01:39:52: root                                      RegexSemI.py <__init__>80 :  No rTYPE regex has been set.
+WARNING:: 01:39:52: root                                      RegexSemI.py <__init__>80 :  No rTYPE regex has been set.
+WARNING:: 01:39:52: root                                      RegexSemI.py <__init__>80 :  No rTYPE regex has been set.
+WARNING:: 01:39:52: root                                RuleSemIMethods.py <__init__>79 :  No suitable regex SemI module found. Defaulting to generic module.
+WARNING:: 01:39:52: root                                      RegexSemI.py <__init__>80 :  No rTYPE regex has been set.
+WARNING:: 01:39:52: root                                      RegexSemI.py <__init__>80 :  No rTYPE regex has been set.
+WARNING:: 01:39:52: root                                      RegexSemI.py <__init__>80 :  No rTYPE regex has been set.
+WARNING:: 01:39:52: root                                      RegexSemI.py <__init__>80 :  No rTYPE regex has been set.
+WARNING:: 01:39:52: root                                      RegexSemI.py <__init__>80 :  No rTYPE regex has been set.
+WARNING:: 01:39:52: root                                      RegexSemI.py <__init__>80 :  No rTYPE regex has been set.
+WARNING:: 01:39:52: root                                      RegexSemI.py <__init__>80 :  No rTYPE regex has been set.
+WARNING:: 01:39:52: root                                      RegexSemI.py <__init__>80 :  No rTYPE regex has been set.
+WARNING:: 01:39:53: root                     PolicyManager.py <_load_domains_policy>230 :  No policy section specified for domain: topicmanager - defaulting to HDC
+WARNING:: 01:39:53: root                                             Texthub.py <run>87 :  NOTE: texthub is not using any error simulation at present.
+DIAL   :: 01:39:53: root                                       Agent.py <start_call>171 :  >> NEW DIALOGUE SESSION. Number: 1
+INFO   :: 01:39:53: root                                    Agent.py <_hand_control>477 :  Domain topicmanager is both already running and has control
+DIAL   :: 01:39:53: root                                      Agent.py <_print_turn>586 :  ** Turn 0 **
+DEBUG  :: 01:39:53: root                                       Agent.py <start_call>188 :  active domain is: topicmanager
+DEBUG  :: 01:39:53: root         ModularSemanticBeliefTracker.p <update_belief_state>95 :  active domain is: topicmanager
+INFO   :: 01:39:53: root               BeliefTrackingManager.py <update_belief_state>76 :  None
+INFO   :: 01:39:53: root               BeliefTrackingManager.py <update_belief_state>77 :  []
+INFO   :: 01:39:53: root               BeliefTrackingManager.py <update_belief_state>78 :  None
+INFO   :: 01:39:53: root                      BeliefTracker.py <update_belief_state>105 :  update belief in tracker called:
+INFO   :: 01:39:53: root                        BeliefTracker.py <_convertHypToTurn>203 :  {'output': {'dialog-acts': []}, 'turn-index': 0}
+DEBUG  :: 01:39:53: root                      BeliefTracker.py <update_belief_state>119 :  {'input': {'live': {'asr-hyps': [], 'slu-hyps': []}},
+ 'output': {'dialog-acts': []},
+ 'turn-index': 0}
+DEBUG  :: 01:39:53: root                      BeliefTracker.py <update_belief_state>123 :  {'beliefs': {'discourseAct': {'bye': 0.0, 'none': 0.0},
+             'method': {'none': 1.0},
+             'requested': {}},
+ 'features': {'inform_info': [True,
+                              False,
+                              False,
+                              False,
+                              False,
+                              True,
+                              False,
+                              False,
+                              False,
+                              False,
+                              True,
+                              False,
+                              False,
+                              False,
+                              False,
+                              True,
+                              False,
+                              False,
+                              False,
+                              False,
+                              True,
+                              False,
+                              False,
+                              False,
+                              False],
+              'informedVenueSinceNone': [],
+              'lastActionInformNone': False,
+              'lastInformedVenue': '',
+              'offerHappened': False}}
+DIAL   :: 01:39:53: root                                       Agent.py <start_call>194 :  >> State: {'topicmanager': {'userActs': [], 'beliefs': {'discourseAct': {'none': 0.0, 'bye': 0.0}, 'method': {'none': 1.0}, 'requested': {}}, 'features': {'offerHappened': False, 'inform_info': [True, False, False, False, False, True, False, False, False, False, True, False, False, False, False, True, False, False, False, False, True, False, False, False, False], 'lastInformedVenue': '', 'informedVenueSinceNone': [], 'lastActionInformNone': False}}}
+INFO   :: 01:39:53: root                                   PolicyManager.py <act_on>112 :  <policy.HDCTopicManager.HDCTopicManagerPolicy object at 0x7f6972121ad0>
+INFO   :: 01:39:53: root                                          Policy.py <act_on>125 :  act on called
+DIAL   :: 01:39:53: root                                   Agent.py <_print_sys_act>601 :  | Sys > hello()
+DEBUG  :: 01:39:53: root                            Agent.py <_evaluate_agents_turn>534 :  Note that we are ignoring any evaluation of the systems first action
+DIAL   :: 01:39:53: root                                     Agent.py <_agents_semo>686 :  Domain with CONTROL: topicmanager
+INFO   :: 01:39:53: root                               RuleSemOMethods.py <__init__>465 :  semo/templates/topicmanagerMessages.txt
+INFO   :: 01:39:53: root                              RuleSemOMethods.py <transform>536 :  Checking Rule hello() : Hello, welcome to the Cambridge Multi-Domain dialogue system. How may I help you?;
+DEBUG  :: 01:39:53: root                              RuleSemOMethods.py <match_act>246 :   rules: {}
+DEBUG  :: 01:39:53: root                              RuleSemOMethods.py <match_act>247 :  $rules: {}
+INFO   :: 01:39:53: root                              RuleSemOMethods.py <transform>540 :  Checking Rule hello() : Hello, welcome to the Cambridge Multi-Domain dialogue system. How may I help you?;: type_match=1, missing=0, matches=0, output=Hello, welcome to the Cambridge Multi- Domain dialogue system. How may I help you?
+DIAL   :: 01:39:53: root                                       Agent.py <start_call>208 :  >> SEMO: Hello, welcome to the Cambridge Multi- Domain dialogue system. How may I help you?
+DIAL   :: 01:39:56: root                                    Agent.py <continue_call>236 :  [('weird link', 1.0)]
+DIAL   :: 01:39:56: root                                    Agent.py <continue_call>237 :  user input: [('weird link', 1.0)]
+DIAL   :: 01:39:56: root                                      Agent.py <_print_turn>586 :  ** Turn 1 **
+INFO   :: 01:39:56: root                         RuleTopicTrackers.py <infer_domain>154 :  link keyword found in: weird link
+INFO   :: 01:39:56: root                              TopicTracking.py <track_topic>140 :  TopicTracker believes we switched domains. From topicmanager to link
+INFO   :: 01:39:56: root                              TopicTracking.py <track_topic>146 :  After user_act - domain is now: link
+INFO   :: 01:39:56: root                                    Agent.py <_hand_control>460 :  Launching Dialogue Manager for domain: link
+DEBUG  :: 01:39:56: root SemanticBeliefTrackingManager. <_load_domains_semantic_belief_ :  No semibelief section specified for domain link - defaulting to modular semibelief
+WARNING:: 01:39:56: root                                      HDCPolicy.py <__init__>82 :  Policy file is given: , but policy type is set to hdc. Ignoring the given policy file and using hdc policy.
+DEBUG  :: 01:39:56: root                                      HDCPolicy.py <__init__>86 :  numActions = 7
+DEBUG  :: 01:39:56: root                                    Agent.py <continue_call>271 :  active domain is: link
+INFO   :: 01:39:56: root                                            SemI.py <decode>196 :  None
+INFO   :: 01:39:56: root                                        RegexSemI.py <clean>267 :  clean
+INFO   :: 01:39:56: root                                        RegexSemI.py <clean>268 :  None
+INFO   :: 01:39:56: root                                            SemI.py <decode>198 :  [('', 1.0)]
+INFO   :: 01:39:56: root               SemIContextUtils.py <_add_context_to_user_act>61 :  Possibly adding context to user semi hyps: [('', 1.0)]
+INFO   :: 01:39:56: root         ModularSemanticBeliefTracker.p <update_belief_state>86 :  SemI   > [('', 1.0)]
+DEBUG  :: 01:39:56: root         ModularSemanticBeliefTracker.p <update_belief_state>95 :  active domain is: link
+INFO   :: 01:39:56: root               BeliefTrackingManager.py <update_belief_state>76 :  None
+INFO   :: 01:39:56: root               BeliefTrackingManager.py <update_belief_state>77 :  [('', 1.0)]
+INFO   :: 01:39:56: root               BeliefTrackingManager.py <update_belief_state>78 :  None
+INFO   :: 01:39:56: root                      BeliefTracker.py <update_belief_state>105 :  update belief in tracker called:
+INFO   :: 01:39:56: root                        BeliefTracker.py <_convertHypToTurn>203 :  {'output': {'dialog-acts': []}, 'turn-index': 0}
+INFO   :: 01:39:56: root                        BeliefTracker.py <_convertHypToTurn>208 :  
+INFO   :: 01:39:56: root                                         dact.py <_ParseAct>304 :  
+INFO   :: 01:39:56: root                                         dact.py <_ParseAct>306 :  {'slots': [], 'act': 'null'}
+DEBUG  :: 01:39:56: root                      BeliefTracker.py <update_belief_state>119 :  {'input': {'live': {'asr-hyps': [],
+                    'slu-hyps': [{'score': 1.0, 'slu-hyp': []}]}},
+ 'output': {'dialog-acts': []},
+ 'turn-index': 0}
+DEBUG  :: 01:39:56: root                      BeliefTracker.py <update_belief_state>123 :  {'beliefs': {'discourseAct': {u'ack': 0.0,
+                              'bye': 0.0,
+                              u'hello': 0.0,
+                              u'none': 1.0,
+                              u'notopen': 0.0,
+                              u'open': 0.0,
+                              u'repeat': 0.0,
+                              u'resend': 0.0,
+                              u'silence': 0.0,
+                              u'thankyou': 0.0},
+             u'email': {'**NONE**': 1.0,
+                        u'firstname.lastname@gmail.com': 0.0},
+             'method': {u'byalternatives': 0.0,
+                        u'byconstraints': 0.0,
+                        u'byname': 0.0,
+                        u'finished': 0.0,
+                        u'none': 1.0,
+                        u'restart': 0.0},
+             u'purpose': {'**NONE**': 1.0, u'charity': 0.0},
+             'requested': {u'email': 0.0, u'purpose': 0.0, u'url': 0.0},
+             u'url': {'**NONE**': 1.0, u'http://gohere.com': 0.0}},
+ 'features': {'inform_info': [False,
+                              True,
+                              False,
+                              False,
+                              False,
+                              False,
+                              True,
+                              False,
+                              False,
+                              False,
+                              False,
+                              True,
+                              False,
+                              False,
+                              False,
+                              False,
+                              True,
+                              False,
+                              False,
+                              False,
+                              False,
+                              True,
+                              False,
+                              False,
+                              False],
+              'informedVenueSinceNone': [],
+              'lastActionInformNone': False,
+              'lastInformedVenue': '',
+              'offerHappened': False}}
+DIAL   :: 01:39:56: root                                    Agent.py <continue_call>277 :  >> State: {'userActs': [('', 1.0)], 'beliefs': {'discourseAct': {u'none': 1.0, u'repeat': 0.0, u'ack': 0.0, u'thankyou': 0.0, u'notopen': 0.0, 'bye': 0.0, u'open': 0.0, u'hello': 0.0, u'silence': 0.0, u'resend': 0.0}, 'requested': {u'url': 0.0, u'email': 0.0, u'purpose': 0.0}, u'url': {u'http://gohere.com': 0.0, '**NONE**': 1.0}, u'email': {u'firstname.lastname@gmail.com': 0.0, '**NONE**': 1.0}, u'purpose': {'**NONE**': 1.0, u'charity': 0.0}, 'method': {u'none': 1.0, u'byname': 0.0, u'byalternatives': 0.0, u'finished': 0.0, u'byconstraints': 0.0, u'restart': 0.0}}, 'features': {'offerHappened': False, 'inform_info': [False, True, False, False, False, False, True, False, False, False, False, True, False, False, False, False, True, False, False, False, False, True, False, False, False], 'lastInformedVenue': '', 'informedVenueSinceNone': [], 'lastActionInformNone': False}}
+INFO   :: 01:39:56: root                                   PolicyManager.py <act_on>112 :  <policy.HDCPolicy.HDCPolicy object at 0x7f697210e690>
+INFO   :: 01:39:56: root                                          Policy.py <act_on>125 :  act on called
+DIAL   :: 01:39:56: root                                   Agent.py <_print_sys_act>601 :  | Sys > hello()
+DIAL   :: 01:39:56: root                                     Agent.py <_agents_semo>686 :  Domain with CONTROL: link
+INFO   :: 01:39:56: root                               RuleSemOMethods.py <__init__>465 :  semo/templates/linkMessages.txt
+INFO   :: 01:39:56: root                              RuleSemOMethods.py <transform>536 :  Checking Rule hello() : Hello, I have just emailed a link, could you please check?;
+DEBUG  :: 01:39:56: root                              RuleSemOMethods.py <match_act>246 :   rules: {}
+DEBUG  :: 01:39:56: root                              RuleSemOMethods.py <match_act>247 :  $rules: {}
+INFO   :: 01:39:56: root                              RuleSemOMethods.py <transform>540 :  Checking Rule hello() : Hello, I have just emailed a link, could you please check?;: type_match=1, missing=0, matches=0, output=Hello, I have just emailed a link, could you please check?
+DIAL   :: 01:40:09: root                                    Agent.py <continue_call>236 :  [('open it', 1.0)]
+DIAL   :: 01:40:09: root                                    Agent.py <continue_call>237 :  user input: [('open it', 1.0)]
+DIAL   :: 01:40:09: root                                      Agent.py <_print_turn>586 :  ** Turn 2 **
+INFO   :: 01:40:09: root                              TopicTracking.py <track_topic>146 :  After user_act - domain is now: link
+INFO   :: 01:40:09: root                                    Agent.py <_hand_control>477 :  Domain link is both already running and has control
+DEBUG  :: 01:40:09: root                                    Agent.py <continue_call>271 :  active domain is: link
+INFO   :: 01:40:09: root                                            SemI.py <decode>196 :  hello()
+INFO   :: 01:40:09: root                                        RegexSemI.py <clean>267 :  clean
+INFO   :: 01:40:09: root                                        RegexSemI.py <clean>268 :  hello()
+INFO   :: 01:40:09: root               SemIContextUtils.py <_add_context_to_user_act>61 :  Possibly adding context to user semi hyps: [['open()', 1.0]]
+INFO   :: 01:40:09: root                                            SemI.py <decode>198 :  [('open()', 1.0)]
+INFO   :: 01:40:09: root               SemIContextUtils.py <_add_context_to_user_act>61 :  Possibly adding context to user semi hyps: [('open()', 1.0)]
+INFO   :: 01:40:09: root         ModularSemanticBeliefTracker.p <update_belief_state>86 :  SemI   > [('open()', 1.0)]
+DEBUG  :: 01:40:09: root         ModularSemanticBeliefTracker.p <update_belief_state>95 :  active domain is: link
+INFO   :: 01:40:09: root               BeliefTrackingManager.py <update_belief_state>76 :  hello()
+INFO   :: 01:40:09: root               BeliefTrackingManager.py <update_belief_state>77 :  [('open()', 1.0)]
+INFO   :: 01:40:09: root               BeliefTrackingManager.py <update_belief_state>78 :  None
+INFO   :: 01:40:09: root                      BeliefTracker.py <update_belief_state>105 :  update belief in tracker called:
+INFO   :: 01:40:09: root                                         dact.py <_ParseAct>304 :  hello()
+INFO   :: 01:40:09: root                                         dact.py <_ParseAct>306 :  {'slots': [], 'act': 'hello'}
+INFO   :: 01:40:09: root                        BeliefTracker.py <_convertHypToTurn>203 :  {'output': {'dialog-acts': [{'slots': [], 'act': 'welcomemsg'}]}, 'turn-index': 1}
+INFO   :: 01:40:09: root                        BeliefTracker.py <_convertHypToTurn>208 :  open()
+INFO   :: 01:40:09: root                                         dact.py <_ParseAct>304 :  open()
+INFO   :: 01:40:09: root                                         dact.py <_ParseAct>306 :  {'slots': [], 'act': 'open'}
+DEBUG  :: 01:40:09: root                      BeliefTracker.py <update_belief_state>119 :  {'input': {'live': {'asr-hyps': [],
+                    'slu-hyps': [{'score': 1.0,
+                                  'slu-hyp': [{u'act': u'open',
+                                               u'slots': []}]}]}},
+ 'output': {'dialog-acts': [{'act': 'welcomemsg', 'slots': []}]},
+ 'turn-index': 1}
+INFO   :: 01:40:09: root                                         dact.py <_ParseAct>304 :  hello()
+INFO   :: 01:40:09: root                                         dact.py <_ParseAct>306 :  {'slots': [], 'act': 'hello'}
+DEBUG  :: 01:40:09: root                      BeliefTracker.py <update_belief_state>123 :  {'beliefs': {'discourseAct': {u'ack': 0.0,
+                              'bye': 0.0,
+                              u'hello': 0.0,
+                              u'none': 0.0,
+                              u'notopen': 0.0,
+                              u'open': 1.0,
+                              u'repeat': 0.0,
+                              u'resend': 0.0,
+                              u'silence': 0.0,
+                              u'thankyou': 0.0},
+             u'email': {'**NONE**': 1.0,
+                        u'firstname.lastname@gmail.com': 0.0},
+             'method': {u'byalternatives': 0.0,
+                        u'byconstraints': 0.0,
+                        u'byname': 0.0,
+                        u'finished': 0.0,
+                        u'none': 1.0,
+                        u'restart': 0.0},
+             u'purpose': {'**NONE**': 1.0, u'charity': 0.0},
+             'requested': {u'email': 0.0, u'purpose': 0.0, u'url': 0.0},
+             u'url': {'**NONE**': 1.0, u'http://gohere.com': 0.0}},
+ 'features': {'inform_info': [False,
+                              True,
+                              False,
+                              False,
+                              False,
+                              False,
+                              True,
+                              False,
+                              False,
+                              False,
+                              False,
+                              True,
+                              False,
+                              False,
+                              False,
+                              False,
+                              True,
+                              False,
+                              False,
+                              False,
+                              False,
+                              True,
+                              False,
+                              False,
+                              False],
+              'informedVenueSinceNone': [],
+              'lastActionInformNone': False,
+              'lastInformedVenue': '',
+              'offerHappened': False}}
+DIAL   :: 01:40:09: root                                    Agent.py <continue_call>277 :  >> State: {'userActs': [('open()', 1.0)], 'beliefs': {'discourseAct': {u'none': 0.0, u'repeat': 0.0, u'ack': 0.0, u'thankyou': 0.0, u'notopen': 0.0, 'bye': 0.0, u'open': 1.0, u'hello': 0.0, u'silence': 0.0, u'resend': 0.0}, 'requested': {u'url': 0.0, u'email': 0.0, u'purpose': 0.0}, u'url': {u'http://gohere.com': 0.0, '**NONE**': 1.0}, u'email': {u'firstname.lastname@gmail.com': 0.0, '**NONE**': 1.0}, u'purpose': {'**NONE**': 1.0, u'charity': 0.0}, 'method': {u'none': 1.0, u'byname': 0.0, u'byalternatives': 0.0, u'finished': 0.0, u'byconstraints': 0.0, u'restart': 0.0}}, 'features': {'offerHappened': False, 'inform_info': [False, True, False, False, False, False, True, False, False, False, False, True, False, False, False, False, True, False, False, False, False, True, False, False, False], 'lastInformedVenue': '', 'informedVenueSinceNone': [], 'lastActionInformNone': False}}
+INFO   :: 01:40:09: root                                   PolicyManager.py <act_on>112 :  <policy.HDCPolicy.HDCPolicy object at 0x7f697210e690>
+INFO   :: 01:40:09: root                                          Policy.py <act_on>125 :  act on called
+DEBUG  :: 01:40:09: root                        HDCPolicy.py <work_entity_retrieval>104 :  {'GLOBAL_NAMENONE': False, 'GLOBAL_OPEN': True, 'GLOBAL_REQMORE': False, 'GLOBAL_ACK': False, 'GLOBAL_BYALTERNATIVES': False, 'GLOBAL_BYCONSTRAINTS': True, 'GLOBAL_REPEAT': False, 'GLOBAL_THANKYOU': False, 'GLOBAL_OFFERHAPPENED': False, 'GLOBAL_COUNTACCEPTED': 0, 'GLOBAL_RESTART': False, 'GLOBAL_FINISHED': False, 'GLOBAL_BYNAME': False}
+DEBUG  :: 01:40:09: root                        HDCPolicy.py <work_entity_retrieval>105 :  HDC policy: getGlobal
+DIAL   :: 01:40:09: root                                   Agent.py <_print_sys_act>601 :  | Sys > open()
+DIAL   :: 01:40:09: root                                     Agent.py <_agents_semo>686 :  Domain with CONTROL: link
+INFO   :: 01:40:09: root                              RuleSemOMethods.py <transform>536 :  Checking Rule hello() : Hello, I have just emailed a link, could you please check?;
+INFO   :: 01:40:09: root                              RuleSemOMethods.py <transform>536 :  Checking Rule null() : Sorry I am a bit confused; please tell me again what you are looking for.;
+INFO   :: 01:40:09: root                              RuleSemOMethods.py <transform>536 :  Checking Rule repeat() : Could you please repeat that?;
+INFO   :: 01:40:09: root                              RuleSemOMethods.py <transform>536 :  Checking Rule bye() : Thank you, goodbye.;
+INFO   :: 01:40:09: root                              RuleSemOMethods.py <transform>536 :  Checking Rule open() : Great, can you send a postcard along with $100 dollars to the address in the link;
+DEBUG  :: 01:40:09: root                              RuleSemOMethods.py <match_act>246 :   rules: {}
+DEBUG  :: 01:40:09: root                              RuleSemOMethods.py <match_act>247 :  $rules: {}
+INFO   :: 01:40:09: root                              RuleSemOMethods.py <transform>540 :  Checking Rule open() : Great, can you send a postcard along with $100 dollars to the address in the link;: type_match=1, missing=0, matches=0, output=Great, can you send a postcard along with $100 dollars to the address in the link
+DIAL   :: 01:40:14: root                                    Agent.py <continue_call>236 :  [('what was the URL?', 1.0)]
+DIAL   :: 01:40:14: root                                    Agent.py <continue_call>237 :  user input: [('what was the URL?', 1.0)]
+DIAL   :: 01:40:14: root                                      Agent.py <_print_turn>586 :  ** Turn 3 **
+INFO   :: 01:40:14: root                              TopicTracking.py <track_topic>146 :  After user_act - domain is now: link
+INFO   :: 01:40:14: root                                    Agent.py <_hand_control>477 :  Domain link is both already running and has control
+DEBUG  :: 01:40:14: root                                    Agent.py <continue_call>271 :  active domain is: link
+INFO   :: 01:40:14: root                                            SemI.py <decode>196 :  open()
+INFO   :: 01:40:14: root                                        RegexSemI.py <clean>267 :  clean
+INFO   :: 01:40:14: root                                        RegexSemI.py <clean>268 :  open()
+INFO   :: 01:40:14: root               SemIContextUtils.py <_add_context_to_user_act>61 :  Possibly adding context to user semi hyps: [[u'request(url)', 1.0]]
+INFO   :: 01:40:14: root                                            SemI.py <decode>198 :  [('request(url)', 1.0)]
+INFO   :: 01:40:14: root               SemIContextUtils.py <_add_context_to_user_act>61 :  Possibly adding context to user semi hyps: [('request(url)', 1.0)]
+INFO   :: 01:40:14: root         ModularSemanticBeliefTracker.p <update_belief_state>86 :  SemI   > [('request(url)', 1.0)]
+DEBUG  :: 01:40:14: root         ModularSemanticBeliefTracker.p <update_belief_state>95 :  active domain is: link
+INFO   :: 01:40:14: root               BeliefTrackingManager.py <update_belief_state>76 :  open()
+INFO   :: 01:40:14: root               BeliefTrackingManager.py <update_belief_state>77 :  [('request(url)', 1.0)]
+INFO   :: 01:40:14: root               BeliefTrackingManager.py <update_belief_state>78 :  None
+INFO   :: 01:40:14: root                      BeliefTracker.py <update_belief_state>105 :  update belief in tracker called:
+INFO   :: 01:40:14: root                                         dact.py <_ParseAct>304 :  open()
+INFO   :: 01:40:14: root                                         dact.py <_ParseAct>306 :  {'slots': [], 'act': 'open'}
+INFO   :: 01:40:14: root                        BeliefTracker.py <_convertHypToTurn>203 :  {'output': {'dialog-acts': [{'slots': [], 'act': 'open'}]}, 'turn-index': 2}
+INFO   :: 01:40:14: root                        BeliefTracker.py <_convertHypToTurn>208 :  request(url)
+INFO   :: 01:40:14: root                                         dact.py <_ParseAct>304 :  request(url)
+INFO   :: 01:40:14: root                                         dact.py <_ParseAct>306 :  {'slots': [['url', None]], 'act': 'request'}
+DEBUG  :: 01:40:14: root                      BeliefTracker.py <update_belief_state>119 :  {'input': {'live': {'asr-hyps': [],
+                    'slu-hyps': [{'score': 1.0,
+                                  'slu-hyp': [{u'act': u'request',
+                                               u'slots': [[u'slot',
+                                                           u'url']]}]}]}},
+ 'output': {'dialog-acts': [{'act': 'open', 'slots': []}]},
+ 'turn-index': 2}
+INFO   :: 01:40:14: root                                         dact.py <_ParseAct>304 :  open()
+INFO   :: 01:40:14: root                                         dact.py <_ParseAct>306 :  {'slots': [], 'act': 'open'}
+DEBUG  :: 01:40:14: root                      BeliefTracker.py <update_belief_state>123 :  {'beliefs': {'discourseAct': {u'ack': 0.0,
+                              'bye': 0.0,
+                              u'hello': 0.0,
+                              u'none': 1.0,
+                              u'notopen': 0.0,
+                              u'open': 0.0,
+                              u'repeat': 0.0,
+                              u'resend': 0.0,
+                              u'silence': 0.0,
+                              u'thankyou': 0.0},
+             u'email': {'**NONE**': 1.0,
+                        u'firstname.lastname@gmail.com': 0.0},
+             'method': {u'byalternatives': 0.0,
+                        u'byconstraints': 0.0,
+                        u'byname': 0.0,
+                        u'finished': 0.0,
+                        u'none': 1.0,
+                        u'restart': 0.0},
+             u'purpose': {'**NONE**': 1.0, u'charity': 0.0},
+             'requested': {u'email': 0.0, u'purpose': 0.0, u'url': 1.0},
+             u'url': {'**NONE**': 1.0, u'http://gohere.com': 0.0}},
+ 'features': {'inform_info': [False,
+                              True,
+                              False,
+                              False,
+                              False,
+                              False,
+                              True,
+                              False,
+                              False,
+                              False,
+                              False,
+                              True,
+                              False,
+                              False,
+                              False,
+                              False,
+                              True,
+                              False,
+                              False,
+                              False,
+                              False,
+                              True,
+                              False,
+                              False,
+                              False],
+              'informedVenueSinceNone': [],
+              'lastActionInformNone': False,
+              'lastInformedVenue': '',
+              'offerHappened': False}}
+DIAL   :: 01:40:14: root                                    Agent.py <continue_call>277 :  >> State: {'userActs': [('request(url)', 1.0)], 'beliefs': {'discourseAct': {u'none': 1.0, u'repeat': 0.0, u'ack': 0.0, u'thankyou': 0.0, u'notopen': 0.0, 'bye': 0.0, u'open': 0.0, u'hello': 0.0, u'silence': 0.0, u'resend': 0.0}, 'requested': {u'url': 1.0, u'email': 0.0, u'purpose': 0.0}, u'url': {u'http://gohere.com': 0.0, '**NONE**': 1.0}, u'email': {u'firstname.lastname@gmail.com': 0.0, '**NONE**': 1.0}, u'purpose': {'**NONE**': 1.0, u'charity': 0.0}, 'method': {u'none': 1.0, u'byname': 0.0, u'byalternatives': 0.0, u'finished': 0.0, u'byconstraints': 0.0, u'restart': 0.0}}, 'features': {'offerHappened': False, 'inform_info': [False, True, False, False, False, False, True, False, False, False, False, True, False, False, False, False, True, False, False, False, False, True, False, False, False], 'lastInformedVenue': '', 'informedVenueSinceNone': [], 'lastActionInformNone': False}}
+INFO   :: 01:40:14: root                                   PolicyManager.py <act_on>112 :  <policy.HDCPolicy.HDCPolicy object at 0x7f697210e690>
+INFO   :: 01:40:14: root                                          Policy.py <act_on>125 :  act on called
+DEBUG  :: 01:40:14: root                        HDCPolicy.py <work_entity_retrieval>104 :  {'GLOBAL_NAMENONE': False, 'GLOBAL_OPEN': False, 'GLOBAL_REQMORE': False, 'GLOBAL_ACK': False, 'GLOBAL_BYALTERNATIVES': False, 'GLOBAL_BYCONSTRAINTS': True, 'GLOBAL_REPEAT': False, 'GLOBAL_THANKYOU': False, 'GLOBAL_OFFERHAPPENED': False, 'GLOBAL_COUNTACCEPTED': 0, 'GLOBAL_RESTART': False, 'GLOBAL_FINISHED': False, 'GLOBAL_BYNAME': False}
+DEBUG  :: 01:40:14: root                        HDCPolicy.py <work_entity_retrieval>105 :  HDC policy: getGlobal
+DEBUG  :: 01:40:14: root                        HDCPolicy.py <work_entity_retrieval>109 :  HDC policy: getConfirmSelect
+DEBUG  :: 01:40:14: root                        HDCPolicy.py <work_entity_retrieval>112 :  HDC policy: getInform
+DEBUG  :: 01:40:14: root                                   HDCPolicy.py <_getInform>201 :  0 among 0 slots are accepted (>=0.8 belief).
+DEBUG  :: 01:40:14: root                                   HDCPolicy.py <_getInform>206 :  Trying to get inform action, have enough accepted slots.
+DEBUG  :: 01:40:14: root                                   HDCPolicy.py <_getInform>207 :  Is there no matching entity? False.
+DEBUG  :: 01:40:14: root                                   HDCPolicy.py <_getInform>208 :  Is there only one matching entity? True.
+DEBUG  :: 01:40:14: root                                   HDCPolicy.py <_getInform>209 :  Can we discriminate more? False.
+DEBUG  :: 01:40:14: root                                   HDCPolicy.py <_getInform>217 :  Getting inform exact action with 0 accepted slots.
+INFO   :: 01:40:14: root                 PolicyUtils.py <getInformAcceptedSlotsAboutEnt :  {'url': u'http://gohere.com', 'purpose': u'Charity', 'id': u'1', 'email': u'firstname.lastname@gmail.com'}
+INFO   :: 01:40:14: root                 PolicyUtils.py <getInformAcceptedSlotsAboutEnt :  {}
+INFO   :: 01:40:14: root                 PolicyUtils.py <getInformAcceptedSlotsAboutEnt :  0
+DIAL   :: 01:40:14: root                                   Agent.py <_print_sys_act>601 :  | Sys > inform(name="http://gohere.com")
+DIAL   :: 01:40:14: root                                     Agent.py <_agents_semo>686 :  Domain with CONTROL: link
+INFO   :: 01:40:14: root                              RuleSemOMethods.py <transform>536 :  Checking Rule hello() : Hello, I have just emailed a link, could you please check?;
+INFO   :: 01:40:14: root                              RuleSemOMethods.py <transform>536 :  Checking Rule null() : Sorry I am a bit confused; please tell me again what you are looking for.;
+INFO   :: 01:40:14: root                              RuleSemOMethods.py <transform>536 :  Checking Rule repeat() : Could you please repeat that?;
+INFO   :: 01:40:14: root                              RuleSemOMethods.py <transform>536 :  Checking Rule bye() : Thank you, goodbye.;
+INFO   :: 01:40:14: root                              RuleSemOMethods.py <transform>536 :  Checking Rule open() : Great, can you send a postcard along with $100 dollars to the address in the link;
+INFO   :: 01:40:14: root                              RuleSemOMethods.py <transform>536 :  Checking Rule notopen() : I'm disappointed you don't trust the link, maybe next time;
+INFO   :: 01:40:14: root                              RuleSemOMethods.py <transform>536 :  Checking Rule inform(name="$X") : The link URL is $X;
+DEBUG  :: 01:40:14: root                              RuleSemOMethods.py <match_act>246 :   rules: {'name': ['$X']}
+DEBUG  :: 01:40:14: root                              RuleSemOMethods.py <match_act>247 :  $rules: {}
+INFO   :: 01:40:14: root                              RuleSemOMethods.py <transform>540 :  Checking Rule inform(name="$X") : The link URL is $X;: type_match=1, missing=0, matches=1, output=The link URL is http://gohere.com

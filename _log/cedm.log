@@ -1,0 +1,89 @@
+DIAL   :: 02:39:23: root                                  SimulateCEDM.py <<module>>205 :  Random Seed is 139
+WARNING:: 02:39:23: root                                      RegexSemI.py <__init__>80 :  No rTYPE regex has been set.
+WARNING:: 02:39:23: root                                      RegexSemI.py <__init__>80 :  No rTYPE regex has been set.
+WARNING:: 02:39:23: root                                      RegexSemI.py <__init__>80 :  No rTYPE regex has been set.
+WARNING:: 02:39:23: root                                      RegexSemI.py <__init__>80 :  No rTYPE regex has been set.
+WARNING:: 02:39:23: root                                      RegexSemI.py <__init__>80 :  No rTYPE regex has been set.
+WARNING:: 02:39:23: root                                      RegexSemI.py <__init__>80 :  No rTYPE regex has been set.
+WARNING:: 02:39:23: root                                RuleSemIMethods.py <__init__>79 :  No suitable regex SemI module found. Defaulting to generic module.
+WARNING:: 02:39:23: root                                      RegexSemI.py <__init__>80 :  No rTYPE regex has been set.
+WARNING:: 02:39:23: root                                      RegexSemI.py <__init__>80 :  No rTYPE regex has been set.
+WARNING:: 02:39:23: root                                      RegexSemI.py <__init__>80 :  No rTYPE regex has been set.
+WARNING:: 02:39:23: root                                      RegexSemI.py <__init__>80 :  No rTYPE regex has been set.
+WARNING:: 02:39:23: root                                      RegexSemI.py <__init__>80 :  No rTYPE regex has been set.
+WARNING:: 02:39:23: root                                      RegexSemI.py <__init__>80 :  No rTYPE regex has been set.
+WARNING:: 02:39:23: root                                      RegexSemI.py <__init__>80 :  No rTYPE regex has been set.
+WARNING:: 02:39:23: root                                      RegexSemI.py <__init__>80 :  No rTYPE regex has been set.
+WARNING:: 02:39:23: root                     PolicyManager.py <_load_domains_policy>229 :  No policy section specified for domain: topicmanager - defaulting to HDC
+WARNING:: 02:39:23: root                        ErrorModel.py <_set_nbest_generator>133 :  Note the original C++ implementation of EMSampledNBestGenerator was actually the same to EMUniformNBestGenerator.
+WARNING:: 02:39:23: root                        ErrorModel.py <_set_nbest_generator>134 :  Here the size of N-best list is also sampled from uniform distribution of [1,..,N].
+DIAL   :: 02:39:23: root                                GoalGenerator.py <init_goal>125 :  CamHotels: GOAL FOUND
+WARNING:: 02:39:23: root                        ErrorModel.py <_set_nbest_generator>133 :  Note the original C++ implementation of EMSampledNBestGenerator was actually the same to EMUniformNBestGenerator.
+WARNING:: 02:39:23: root                        ErrorModel.py <_set_nbest_generator>134 :  Here the size of N-best list is also sampled from uniform distribution of [1,..,N].
+DIAL   :: 02:39:23: root                                GoalGenerator.py <init_goal>125 :  CamRestaurants: GOAL FOUND
+DIAL   :: 02:39:23: root                                       SimulateCEDM.py <run>131 :  User will execute the following goal: placetostay[(u'area', '=', u'centre'), (u'kind', '=', u'hotel'), (u'pricerange', '=', u'expensive')]['name']
+DIAL   :: 02:39:23: root                                       SimulateCEDM.py <run>131 :  User will execute the following goal: restaurant[(u'area', '=', u'centre'), (u'area', '=', u'area'), (u'food', '=', u'indian'), (u'pricerange', '=', u'expensive'), (u'pricerange', '=', u'pricerange')]['name']
+DIAL   :: 02:39:23: root                                   AgentCEDM.py <start_call>169 :  >> NEW DIALOGUE SESSION. Number: 1
+DIAL   :: 02:39:23: root                                  AgentCEDM.py <_print_turn>572 :  ** Turn 0 **
+WARNING:: 02:39:23: root                                      RegexSemI.py <__init__>80 :  No rTYPE regex has been set.
+WARNING:: 02:39:23: root                                      RegexSemI.py <__init__>80 :  No rTYPE regex has been set.
+WARNING:: 02:39:23: root                                      RegexSemI.py <__init__>80 :  No rTYPE regex has been set.
+WARNING:: 02:39:23: root                                      RegexSemI.py <__init__>80 :  No rTYPE regex has been set.
+WARNING:: 02:39:23: root                                      RegexSemI.py <__init__>80 :  No rTYPE regex has been set.
+WARNING:: 02:39:23: root                                      RegexSemI.py <__init__>80 :  No rTYPE regex has been set.
+WARNING:: 02:39:23: root                                RuleSemIMethods.py <__init__>79 :  No suitable regex SemI module found. Defaulting to generic module.
+WARNING:: 02:39:23: root                                      RegexSemI.py <__init__>80 :  No rTYPE regex has been set.
+WARNING:: 02:39:23: root                                      RegexSemI.py <__init__>80 :  No rTYPE regex has been set.
+WARNING:: 02:39:23: root                                      RegexSemI.py <__init__>80 :  No rTYPE regex has been set.
+WARNING:: 02:39:23: root                                      RegexSemI.py <__init__>80 :  No rTYPE regex has been set.
+WARNING:: 02:39:23: root                                      RegexSemI.py <__init__>80 :  No rTYPE regex has been set.
+WARNING:: 02:39:23: root                                      RegexSemI.py <__init__>80 :  No rTYPE regex has been set.
+WARNING:: 02:39:23: root                                      RegexSemI.py <__init__>80 :  No rTYPE regex has been set.
+WARNING:: 02:39:23: root                                      RegexSemI.py <__init__>80 :  No rTYPE regex has been set.
+WARNING:: 02:39:23: root                                      RegexSemI.py <__init__>80 :  No rTYPE regex has been set.
+WARNING:: 02:39:23: root                                      RegexSemI.py <__init__>80 :  No rTYPE regex has been set.
+WARNING:: 02:39:23: root                                      RegexSemI.py <__init__>80 :  No rTYPE regex has been set.
+WARNING:: 02:39:23: root                                      RegexSemI.py <__init__>80 :  No rTYPE regex has been set.
+WARNING:: 02:39:23: root                                      RegexSemI.py <__init__>80 :  No rTYPE regex has been set.
+DIAL   :: 02:39:23: root                               AgentCEDM.py <_print_sys_act>587 :  | Sys > hello() {1.0}
+DIAL   :: 02:39:23: root                                       SimulateCEDM.py <run>158 :  | User > inform(CamHotels#type="placetostay")
+DIAL   :: 02:39:23: root                                AgentCEDM.py <continue_call>227 :  user input: [(u'inform(CamHotels#type="placetostay")', 1.0)]
+DIAL   :: 02:39:23: root                                  AgentCEDM.py <_print_turn>572 :  ** Turn 1 **
+WARNING:: 02:39:23: root                                      HDCPolicy.py <__init__>82 :  Policy file is given: , but policy type is set to hdc. Ignoring the given policy file and using hdc policy.
+DIAL   :: 02:39:23: root                               AgentCEDM.py <_print_sys_act>587 :  | Sys > request(CamHotels#area) {1.0}
+ERROR  :: 02:39:25: root                              ContextLogger.py <_exceptHook>263 :  Uncaught exception: <type 'exceptions.ImportError'>( Failed to import any qt binding )
+          Traceback (most recent call last):
+            File "SimulateCEDM.py", line 209, in <module>
+              simulator.run_dialogs(args.number)
+            File "SimulateCEDM.py", line 108, in run_dialogs
+              self.run(session_id='simulate_dialog'+str(i))
+            File "SimulateCEDM.py", line 165, in run
+              user_act=user_act)
+            File "/home/ubuntu/pydial/AgentCEDM.py", line 288, in continue_call
+              self._evaluate_agents_turn(domainSimulatedUsers, sys_act, state)
+            File "/home/ubuntu/pydial/AgentCEDM.py", line 551, in _evaluate_agents_turn
+              self.reward = self.evaluation_manager.turnReward(domainString=operatingDomain, turnInfo=turnInfo)
+            File "/home/ubuntu/pydial/cedm/evaluation/EvaluationManager.py", line 77, in turnReward
+              self._bootup_domain(dString)
+            File "/home/ubuntu/pydial/evaluation/EvaluationManager.py", line 370, in _bootup_domain
+              self._load_domains_evaluator(dstring)
+            File "/home/ubuntu/pydial/evaluation/EvaluationManager.py", line 339, in _load_domains_evaluator
+              import SuccessEvaluator
+            File "/home/ubuntu/pydial/evaluation/SuccessEvaluator.py", line 58, in <module>
+              import matplotlib.pyplot as plt
+            File "/home/ubuntu/anaconda2/lib/python2.7/site-packages/matplotlib/pyplot.py", line 115, in <module>
+              _backend_mod, new_figure_manager, draw_if_interactive, _show = pylab_setup()
+            File "/home/ubuntu/anaconda2/lib/python2.7/site-packages/matplotlib/backends/__init__.py", line 62, in pylab_setup
+              [backend_name], 0)
+            File "/home/ubuntu/anaconda2/lib/python2.7/site-packages/matplotlib/backends/backend_qt5agg.py", line 15, in <module>
+              from .backend_qt5 import (
+            File "/home/ubuntu/anaconda2/lib/python2.7/site-packages/matplotlib/backends/backend_qt5.py", line 19, in <module>
+              import matplotlib.backends.qt_editor.figureoptions as figureoptions
+            File "/home/ubuntu/anaconda2/lib/python2.7/site-packages/matplotlib/backends/qt_editor/figureoptions.py", line 20, in <module>
+              import matplotlib.backends.qt_editor.formlayout as formlayout
+            File "/home/ubuntu/anaconda2/lib/python2.7/site-packages/matplotlib/backends/qt_editor/formlayout.py", line 54, in <module>
+              from matplotlib.backends.qt_compat import QtGui, QtWidgets, QtCore
+            File "/home/ubuntu/anaconda2/lib/python2.7/site-packages/matplotlib/backends/qt_compat.py", line 158, in <module>
+              raise ImportError("Failed to import any qt binding")
+          ImportError: Failed to import any qt binding
+          

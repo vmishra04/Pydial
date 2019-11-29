@@ -60,7 +60,7 @@ SOFTWARE.'''
 from __future__ import print_function
 import numpy as np
 import tensorflow as tf
-import tensorflow.contrib.rnn as rnn
+from tensorflow.python.ops.rnn_cell import BasicLSTMCell as rnn
 import os
 
 

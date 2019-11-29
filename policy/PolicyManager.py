@@ -109,6 +109,7 @@ class PolicyManager(object):
         if self.committees[dstring] is not None:
             systemAct = self.committees[dstring].act_on(state=state, domainInControl=dstring)
         else:
+	    logger.info(self.domainPolicies[dstring])
             systemAct = self.domainPolicies[dstring].act_on(state=state)
 
         return systemAct

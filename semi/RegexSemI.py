@@ -141,6 +141,8 @@ class RegexSemI(SemI):
         self._decode_repeat(obs)
         self._decode_reqalts(obs)
         self._decode_bye(obs)
+        self._decode_open(obs)
+        self._decode_notopen(obs)
         self._decode_type(obs)
         # probably need to then do some cleaning on acts in semanticActs
         self.clean(sys_act)
@@ -153,6 +155,8 @@ class RegexSemI(SemI):
         self.rNEG =  "(\b|^|\ )(no\b|wrong|incorrect|error)|not\ (true|correct|right)\s" 
         self.rAFFIRM = "(yes|yeah|(\b|^)ok\b|(\b|^)OK\b|okay|sure|(that('?s| is) )?(?<!not\ )(?<!no\ )(right|correct|confirm))" 
         self.rBYE = "(\b|^|\ )(bye|goodbye|that'?s?\ (is\ )*all)(\s|$|\ |\.)"
+        self.rOPEN = "(open|opened)"
+        self.rNOTOPEN = "(trust|not)"
         self.GREAT = "(great|good|awesome)"
         self.HELPFUL = "(that((\')?s|\ (is|was))\ (very\ )?helpful)"
         self.THANK = "(thank(s|\ you)(\ (very|so)\ much)?)"
@@ -231,6 +235,18 @@ class RegexSemI(SemI):
 #         elif self._check(re.search(self.rTHANKS,obs,re.I)):
 #             self.semanticActs.append('bye()')
 
+    def _decode_open(self, obs):
+        """
+        """
+        if self._check(re.search(self.rOPEN,obs, re.I)): #DEL is not None:
+            self.semanticActs.append('open()')
+
+    def _decode_notopen(self, obs):
+        """
+        """
+        if self._check(re.search(self.rNOTOPEN,obs, re.I)): #DEL is not None:
+            self.semanticActs.append('notopen()')
+
     def _decode_reqalts(self,obs):
         """
         """
@@ -248,7 +264,8 @@ class RegexSemI(SemI):
         """
         #TODO - deal with duplicates, probabilities, others?
         tempActs = {}
-        
+        logger.info("clean")
+	logger.info(sys_act)
         #first add context to user acts
         for act in self.semanticActs:
             [act] = contextUtils._add_context_to_user_act(sys_act,[[act,1.0]],self.domainTag)

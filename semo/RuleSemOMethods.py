@@ -462,6 +462,7 @@ class BasicTemplateGenerator(object):
     :type filename: str
     '''
     def __init__(self, filename):
+        logger.info(filename)
         from utils import Scanner
         fn = Settings.locate_file(filename)
         if os.path.exists(fn):
@@ -489,6 +490,7 @@ class BasicTemplateGenerator(object):
             while scanner.cur[0] not in [tokenize.ENDMARKER]:
                 if scanner.cur[0] == tokenize.NAME:
                     self.rules.append(BasicTemplateRule(scanner))
+	           # logger.info(self.rules)
                 elif scanner.cur[1] == '%':
                     ftn = BasicTemplateFunction(scanner)
                     self.functions.append(ftn)
@@ -531,10 +533,10 @@ class BasicTemplateGenerator(object):
         best_missing = 1000
         best_non_term_map = None
         for rule in self.rules:
-            logger.debug('Checking Rule %s' % str(rule)) 
+            logger.info('Checking Rule %s' % str(rule)) 
             out, matches, missing, type_match, non_term_map = rule.generate(input_utt)
             if type_match > 0:
-                logger.debug('Checking Rule %s: type_match=%d, missing=%d, matches=%d, output=%s' %
+                logger.info('Checking Rule %s: type_match=%d, missing=%d, matches=%d, output=%s' %
                              (str(rule), type_match, missing, matches, ' '.join(out)))
 
             # Pick up the best rule.

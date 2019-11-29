@@ -156,6 +156,8 @@ class HDCPolicy(Policy.Policy):
             act = PolicyUtils.getGlobalAction(belief, 'REQMORE', domainString=self.domainString)
         elif global_summary['GLOBAL_RESTART'] > 0.5:
             act = PolicyUtils.getGlobalAction(belief, 'RESTART', domainString=self.domainString)
+	elif global_summary['GLOBAL_OPEN'] > 0.5:
+            act = PolicyUtils.getGlobalAction(belief, 'OPEN', domainString=self.domainString)
 
         if act != 'null()':
             return True, act
@@ -209,6 +211,7 @@ class HDCPolicy(Policy.Policy):
 
             if len(requested_slots) > 0 and offer_happened:
                 logger.debug('Getting inform requested action.')
+                logger.debug(belief)
                 act = PolicyUtils.getGlobalAction(belief, 'INFORM_REQUESTED', domainString=self.domainString)
             else:
                 logger.debug('Getting inform exact action with %d accepted slots.' % count80)

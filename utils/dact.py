@@ -300,15 +300,20 @@ def __ParseAct(t):
     return r
 
 def _ParseAct(raw_act_text, user=True):
-
+    
+    logger.info(raw_act_text)
     raw_act = __ParseAct(raw_act_text)
+    logger.info(raw_act)
     final_dialog_act = []
     
       
     if raw_act['act'] == "select" and user :
       raw_act['act'] = "inform"
-      
+    
     main_act_type = raw_act['act']
+
+    #if raw_act['act'] == "open" and user :
+    #  main_act_type  = "open"
 
     if raw_act['act'] == "request" or raw_act['act'] == "confreq":
         for requested_slot in [slot for slot, value in raw_act['slots'] if value == None] :
@@ -323,7 +328,7 @@ def _ParseAct(raw_act_text, user=True):
         else :
             main_act_type = "inform"
         
-    elif (raw_act['act'] in ['negate','repeat','affirm','bye','restart','reqalts','hello','silence','thankyou','ack','help','canthear','reqmore']):
+    elif (raw_act['act'] in ['negate','repeat','affirm','bye','restart','reqalts','hello','silence','thankyou','ack','help','canthear','reqmore','open']):
         if raw_act['act'] == "hello" and not user:
             raw_act['act'] = "welcomemsg"
         final_dialog_act.append( {

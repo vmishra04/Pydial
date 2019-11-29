@@ -1,8 +1,7 @@
-###############################################################################
 # PyDial: Multi-domain Statistical Spoken Dialogue System Software
 ###############################################################################
 #
-# Copyright 2015 - 2019
+# Copyright 2015 - 2017
 # Cambridge University Engineering Department Dialogue Systems Group
 #
 # 
@@ -48,6 +47,7 @@ from utils import Settings, ContextLogger
 from topictracking import TopicTracking
 from ontology import Ontology
 from utils.DiaAct import DiaAct, DiaActWithProb
+from cedm.utils.DActEntity import DiaActEntity
 
 import time, re
 logger = ContextLogger.getLogger('')
@@ -95,7 +95,6 @@ class DialogueAgent(object):
         self.NO_ASR_MSG = "I am afraid I did not understand. Could you please repeat that."
         self.maxTurns_per_domain = 30
         self.traceDialog = 2
-        self.sim_level = 'dial_act'
         
         # CONFIGS:
         if Settings.config.has_option('agent', 'savefrequency'):
@@ -106,8 +105,6 @@ class DialogueAgent(object):
             self.maxTurns_per_domain = Settings.config.getint("agent", "maxturns")
         if Settings.config.has_option("GENERAL", "tracedialog"):
             self.traceDialog = Settings.config.getint("GENERAL", "tracedialog")
-        if Settings.config.has_option("usermodel", "simlevel"):
-            self.sim_level = Settings.config.get("usermodel", "simlevel")
 
         # TOPIC TRACKING:
         #-----------------------------------------
@@ -168,6 +165,7 @@ class DialogueAgent(object):
         ''' 
         self._check_agent_not_on_call()
         self.NUM_DIALOGS += 1
+        #logger.info(">> NEW DIALOGUE SESSION. Number: "+str(self.NUM_DIALOGS))
         logger.dial(">> NEW DIALOGUE SESSION. Number: "+str(self.NUM_DIALOGS))
         
         # restart agent:
@@ -180,22 +178,18 @@ class DialogueAgent(object):
         
         self._print_turn()
         
-        currentDomain = self.topic_tracker.operatingDomain
-        last_sys_act = self.retrieve_last_sys_act(currentDomain)
+        currentDomain = self._track_topic_and_hand_control([('','')]) # fake input to not have to change general topic tracker
             
         # SYSTEM ACT:
         # 1. Belief state tracking -- (currently just in single domain as directed by topic tracker)
         logger.debug('active domain is: '+currentDomain)
         
-        state = self.semi_belief_manager.update_belief_state(ASR_obs=None, sys_act=last_sys_act,
+        state = self.semi_belief_manager.update_belief_state(ASR_obs=None, sys_act=None,
                                                      dstring=currentDomain, turn=self.currentTurn,hub_id = self.hub_id)
-       
-	#if state:
-	logger.dial(">> State: "+str(state.domainStates)) 
+        
         
         # 2. Policy -- Determine system act/response
-        sys_act = self.policy_manager.act_on(dstring=self.topic_tracker.operatingDomain, 
-                                                  state=state)
+        sys_act = self.policy_manager.act_on(currentDomain,state)
         
         self._print_sys_act(sys_act)
 
@@ -204,19 +198,15 @@ class DialogueAgent(object):
             
         # SEMO:
         self.prompt_str = self._agents_semo(sys_act)
-
-        logger.dial(">> SEMO: "+str(self.prompt_str))
-        
         self.callValidator.validate(sys_act)
         
         sys_act.prompt = self.prompt_str
         state.setLastSystemAct(sys_act)
         
-        #---Return the generated prompt---------------------------------------------------
         return sys_act
     
     
-    def continue_call(self, asr_info, domainString=None, domainSimulatedUsers=None):
+    def continue_call(self, asr_info, domainString=None, domainSimulatedUsers=None, user_act=None):
         '''
         Works through topictracking > semi belief > policy > semo > evaluation -- for turns > 0
         
@@ -233,8 +223,8 @@ class DialogueAgent(object):
         
         :return: DiaAct -- the system's reponse dialogue act with verbalization
         ''' 
-	logger.dial(asr_info)
-        logger.dial("user input: {}".format([(x.to_string() if isinstance(x,DiaAct) else x[0], round(x.P_Au_O, 3) if isinstance(x,DiaAct) else x[1]) for x in asr_info]))
+
+        logger.dial("user input: {}".format([(x.to_string() if isinstance(x,DiaActWithProb) else x[0], round(x.P_Au_O, 3) if isinstance(x,DiaActWithProb) else x[1]) for x in asr_info]))
         
         # Check if user says bye and whether this is already valid
         self.callValidator.validate() # update time once more
@@ -245,7 +235,7 @@ class DialogueAgent(object):
         # 0. Increment turn and possibly set ENDING_DIALOG if max turns reached:
         #--------------------------------------------------------------------------------------------------------------
         if self._increment_turn_and_check_maxTurns():
-            sys_act = DiaAct('bye()')
+            sys_act = DiaActEntity('bye()')
             sys_act.prompt = self.MAX_TURNS_PROMPT
             return sys_act
         
@@ -254,13 +244,13 @@ class DialogueAgent(object):
         
         # Make sure there is some asr information:
         if not len(asr_info):
-            sys_act = DiaAct('null()')
+            sys_act = DiaActEntity('null()')
             sys_act.prompt = self.NO_ASR_MSG
             return sys_act
         
         # TOPIC TRACKING: Note: can pass domainString directly here if cheating/developing or using simulate
         currentDomain = self._track_topic_and_hand_control(domainString=domainString, userAct_hyps=asr_info)
-        prev_sys_act = self.retrieve_last_sys_act(currentDomain)
+        
         
         
         # 2. SYSTEM response:
@@ -270,25 +260,25 @@ class DialogueAgent(object):
                 # 1. Belief state tracking -- (currently just in single domain as directed by topic tracker)
         logger.debug('active domain is: '+currentDomain)
         
-        state = self.semi_belief_manager.update_belief_state(ASR_obs=asr_info, sys_act=prev_sys_act,
-                                                     dstring=currentDomain, turn=self.currentTurn,hub_id = self.hub_id, sim_lvl=self.sim_level)
+        state = self.semi_belief_manager.update_belief_state(ASR_obs=asr_info, sys_act=None, # interface still of general PyDial
+                                                     dstring=currentDomain, turn=self.currentTurn,hub_id = self.hub_id)
         
-	#if state:
-        logger.dial(">> State: "+str(state.getDomainState(dstring=currentDomain)))  
+        # state = self.semi_belief_manager.state
+        # 'area' in self.semi_belief_manager.state.domainStates['TownInfo']._entities['CamHotels'].belief['beliefs']['area']
+        
         self._print_usr_act(state, currentDomain)
         
         # 2. Policy -- Determine system act/response
-        sys_act = self.policy_manager.act_on(dstring=currentDomain, 
-                                                  state=state)
-
-        # Check ending the call:
-        sys_act = self._check_ENDING_CALL(state, sys_act)  # NB: this may change the self.prompt_str
-
-        self._print_sys_act(sys_act)
-
+        sys_act = self.policy_manager.act_on(currentDomain,state)
+        
+        
         # SEMO:
         self.prompt_str = self._agents_semo(sys_act)
-        sys_act.prompt = self.prompt_str
+        
+        # Check ending the call:
+        sys_act = self._check_ENDING_CALL(state, sys_act)    # NB: this may change the self.prompt_str
+        
+        self._print_sys_act(sys_act)
         
         
         # 3. TURN ENDING
@@ -297,10 +287,16 @@ class DialogueAgent(object):
         # EVALUATION: - record the system action taken in the current domain if using tasks for evaluation (ie DialogueServer)
         self._evaluate_agents_turn(domainSimulatedUsers, sys_act, state)
         
+        if isinstance(sys_act,DiaActEntity):
+            for item in sys_act.items:
+                if '_' in item.slot_entity:
+                    logger.error('Entity parsing went wrong: {} {}'.format(item.slot_entity, sys_act))
+        
+        
         self.callValidator.validate(sys_act)
         
-        sys_act.prompt = self.prompt_str
         state.setLastSystemAct(sys_act)
+        sys_act.prompt = self.prompt_str
         
         #---Return the generated prompt---------------------------------------------------
         return sys_act
@@ -378,6 +374,7 @@ class DialogueAgent(object):
         self.topic_tracker.restart()
         self.policy_manager.restart()
         self.semi_belief_manager.restart()
+#         self.belief_manager.restart()
         self.evaluation_manager.restart()
         
         # Give initial control to starting domain/topictracker: 
@@ -386,21 +383,6 @@ class DialogueAgent(object):
         self._hand_control(domainString=self.topic_tracker.operatingDomain, previousDomainString=None)
     
     
-    def retrieve_last_sys_act(self, domainString=None):
-        '''
-        Retreives the sys act from domain domainString if a domain switch has occurred
-
-        :param domainString: domain name
-        :type domainString: string
-              
-        :return: string -- the system's dialogue act reponse
-        '''
-        
-        if domainString is None:
-            domainString = self.topic_tracker.operatingDomain
-        sys_act = self.policy_manager.getLastSystemAction(domainString)
-        return sys_act
-
     def _logical_requirements(self):
         '''
         Ensure system always says hello at first turn 
@@ -534,6 +516,7 @@ class DialogueAgent(object):
             logger.debug('Note that we are ignoring any evaluation of the systems first action')
             return   
         operatingDomain = self.topic_tracker.operatingDomain       # Simply for easy access:
+        eType = state.domainStates[operatingDomain].entityFocus
         
         
 #         # 0. If using RNN evaluator, extract turn level feature:
@@ -554,11 +537,12 @@ class DialogueAgent(object):
         #---------------------------------------------------------------------------------------------------------
         self.reward = None
         turnInfo = {}
-        turnInfo['sys_act']=sys_act.to_string()
-        turnInfo['state']=state
-        turnInfo['prev_sys_act']=state.getLastSystemAct(operatingDomain)
+        turnInfo['sys_act']=sys_act.to_string_plain()
+        domainState = state.domainStates[operatingDomain]
+        turnInfo['state']=state.domainStates[operatingDomain]
+        turnInfo['prev_sys_act']=state.lastSystemAct[operatingDomain].to_string_plain()
         if self.hub_id=='simulate':
-            user_model_holder = domainSimulatedUsers[operatingDomain]
+            user_model_holder = domainSimulatedUsers[eType]
             if user_model_holder is None:
                 logger.warning('Simulated user not present for domain %s - passing reward None thru to policy' % operatingDomain)
             else:
@@ -568,7 +552,7 @@ class DialogueAgent(object):
                 
         # 2. Pass reward to dialogue management:
         #--------------------------------------------------------------------------------------------------------- 
-        self.policy_manager.record(domainString=operatingDomain, reward=self.reward) 
+        self.policy_manager.record(domainString=eType, reward=self.reward) 
            
         return
     
@@ -580,9 +564,11 @@ class DialogueAgent(object):
         :return: None
         '''
         if self.hub_id=='dialogueserver':
+            #logger.info('Turn %d' % self.currentTurn)
             logger.dial('Turn %d' % self.currentTurn)
         else:
             if self.traceDialog>1: print '   Turn %d' % self.currentTurn
+            #logger.info('** Turn %d **' % self.currentTurn)
             logger.dial('** Turn %d **' % self.currentTurn)
         return
     
@@ -670,7 +656,7 @@ class DialogueAgent(object):
                     logger.warning('Ignoring system act: %s and saying goodbye as user has said bye' % sys_act)
                     self.prompt_str = 'Goodbye. '       # TODO - check how system can say bye --otherwise user has said bye,
                     #  and we get some odd reply like 'in the south. please enter the 5 digit id ...'
-            sys_act = DiaAct('bye()')
+            sys_act = DiaActEntity('bye()')
         return sys_act
 
     def _agents_semo(self, sys_act):
@@ -683,8 +669,9 @@ class DialogueAgent(object):
         :return string -- system's sentence reponse
         '''
         if self.semo_manager is not None:
-            logger.dial("Domain with CONTROL: "+self.topic_tracker.operatingDomain)
-            prompt_str = self.semo_manager.generate(sys_act, domainTag=self.topic_tracker.operatingDomain)
+            #logger.info("Domain with CONTROL: "+self.topic_tracker.operatingDomain)
+            logger.dial("Entity in FOCUS: "+sys_act.entityname)
+            prompt_str = self.semo_manager.generate(sys_act.to_string_plain(), domainTag=sys_act.entityname)
         else:
             prompt_str = None 
         return prompt_str                      
@@ -736,6 +723,7 @@ class DialogueAgent(object):
         :return: bool -- check whether the conversation reaches max turns
         ''' 
         if self.currentTurn > self.maxTurns:
+            #logger.info("Ending dialog due to MAX TURNS being reached: "+str(self.currentTurn))
             logger.dial("Ending dialog due to MAX TURNS being reached: "+str(self.currentTurn))
             self.ENDING_DIALOG = True
             return True
@@ -776,6 +764,7 @@ class DialogueAgent(object):
             return klass()
         except ImportError as e:
             logger.error('Manager "{}" could not be loaded: {}'.format(manager, e))
+    
 
 
 

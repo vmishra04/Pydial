@@ -67,6 +67,7 @@ global_summary_features = ['GLOBAL_BYCONSTRAINTS',
                            'GLOBAL_RESTART',
                            'GLOBAL_COUNTACCEPTED',
                            'GLOBAL_NAMENONE',
+		           'GLOBAL_OPEN',
                            'GLOBAL_OFFERHAPPENED']
 
 REQUESTING_THRESHOLD = 0.5
@@ -113,6 +114,8 @@ def globalSummary(belief, domainString):
         summaryArray['GLOBAL_THANKYOU'] = True
     elif topDiscourseAct == 'ack' and topDiscourseActBelief > 0.5:
         summaryArray['GLOBAL_ACK'] = True
+    elif topDiscourseAct == 'open' and topDiscourseActBelief > 0.5:
+        summaryArray['GLOBAL_OPEN'] = True
 
     return summaryArray
 

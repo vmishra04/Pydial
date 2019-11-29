@@ -163,6 +163,8 @@ class PolicyCommittee(object):
         # 3. calculate committee Q and select act
         
         belief = state.getDomainState(domainInControl)
+
+        logger.dial(">> NEW DIALOGUE SESSION. Number: "+str(belief))
         
         domainPolicies = self.manager.domainPolicies
         

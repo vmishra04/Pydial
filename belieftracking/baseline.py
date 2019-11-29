@@ -182,6 +182,8 @@ def labels(user_act, mact, lastInformedVenue):
         discourseAct = "hello"
     elif "bye" in act_types:
         discourseAct = "bye"
+    elif "open" in act_types:
+        discourseAct = "open"
             
     return informed_goals, denied_goals, requested_slots, method, discourseAct, lastInformedVenue
 

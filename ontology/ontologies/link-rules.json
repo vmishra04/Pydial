@@ -1,0 +1,29 @@
+{
+    "binary": [], 
+    "discourseAct": [
+        "ack", 
+        "hello", 
+        "none", 
+        "repeat", 
+        "silence", 
+        "thankyou",
+        "open",
+        "resend",
+        "notopen"
+    ], 
+    "informable": {"url":["http://gohere.com"],
+                   "email":["firstname.lastname@gmail.com"],
+                   "purpose":["charity"]
+                }, 
+    "method": [
+        "none", 
+        "byconstraints", 
+        "byname", 
+        "finished", 
+        "byalternatives", 
+        "restart"
+    ], 
+    "requestable": ["url","email","purpose"], 
+    "system_requestable": [], 
+    "type": "link"
+}

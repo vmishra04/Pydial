@@ -122,6 +122,7 @@ class Policy(object):
         :returns: the next system action of type :class:`~utils.DiaAct.DiaAct`
         '''
         beliefstate = state.getDomainState(self.domainString)
+	logger.info("act on called")
         
         if self.lastSystemAction is None and self.startwithhello:
             _systemAct = 'hello()'
