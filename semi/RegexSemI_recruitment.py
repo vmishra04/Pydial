@@ -45,7 +45,7 @@ from utils import ContextLogger
 logger = ContextLogger.getLogger('')
 
 
-class RegexSemI_link(RegexSemI.RegexSemI):
+class RegexSemI_recruitment(RegexSemI.RegexSemI):
     """
     """
     def __init__(self, repoIn=None):
