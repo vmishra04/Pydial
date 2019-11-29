@@ -71,7 +71,6 @@ class RegexSemI_recruitment(RegexSemI.RegexSemI):
         self.slot_vocab["linkedin"] = "(linkedin)"
         self.slot_vocab["salary"] = "(salary)"
         self.slot_vocab["email"] = "(email|mail)(\ ?range)*" 
-        self.slot_vocab["purpose"] = "(purpose|meaning)"
         self.slot_vocab["phone"] = "(phone(\ number)*|number|phone)"
         
         #---------------------------------------------------------------------------------------------------
@@ -96,7 +95,6 @@ class RegexSemI_recruitment(RegexSemI.RegexSemI):
         # FIXME:  Handcrafted extra rules as required on a slot to slot basis:
         self.request_regex["url"] += "|(url)"
         self.request_regex["email"] += "|(email)"
-        self.request_regex["purpose"] += "|(purpose)"
         self.request_regex["linkedin"] += "|(linkedin)"
         self.request_regex["phone"] += "|(phone)"
         self.request_regex["salary"] += "|(salary)"
@@ -127,13 +125,7 @@ class RegexSemI_recruitment(RegexSemI.RegexSemI):
                 self.inform_regex[slot]['dontcare'] = dontcare+slot_term
                 self.inform_regex[slot]['dontcare'] += r"|" + slot_term + nomatter
 
-            if slot == "purpose":
-                LOCATION = r"(purpose)"
-                slot_term = r"(the\ )*"+LOCATION
-                self.inform_regex[slot]['dontcare'] = dontcare+slot_term
-                self.inform_regex[slot]['dontcare'] += r"|" + slot_term + nomatter
-                self.inform_regex[slot]['dontcare'] += r"|any(\ ?where)(\ is\ (fine|ok\b|good|okay))?"
-                
+           
             if slot == "url":
                 slot_term = r"(the\ )*"+slot
                 self.inform_regex[slot]['dontcare'] = dontcare+slot_term
@@ -253,13 +245,6 @@ class RegexSemI_recruitment(RegexSemI.RegexSemI):
         self.slot_values[slot]['expensive'] = "(to\ be\ |any\ )*(expensive|expensively|dear|costly|pricey)"
 #         self.slot_values[slot]['dontcare'] = "any\ (price|price(\ |-)*range)"
         # SLOT: food
-        slot = "purpose"
-        # rely only on ontology values for now
-        self.slot_values[slot]["asian oriental"] = "(oriental|asian)"
-        self.slot_values[slot]["gastropub"] = "(gastropub|gastro pub)"
-        self.slot_values[slot]["italian"] = "(italian|pizza|pasta)"
-        self.slot_values[slot]["north american"] = "(american|USA)"
-        
         #---------------------------------------------------------------------------------------------------
 
 #END OF FILE
