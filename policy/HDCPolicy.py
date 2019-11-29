@@ -199,6 +199,10 @@ class HDCPolicy(Policy.Policy):
 
         logger.debug('%d among %d slots are accepted (>=0.8 belief).' % 
                      (count80, Ontology.global_ontology.get_length_system_requestable_slots(self.domainString)))
+        
+        logger.info(first)
+        logger.info(second)
+        logger.info(discr)
 
         count80_logic = count80 >= Ontology.global_ontology.get_length_system_requestable_slots(self.domainString)
         if first or second or not discr or count80_logic:  

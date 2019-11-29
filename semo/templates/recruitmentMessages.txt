@@ -34,5 +34,5 @@ null() : "Sorry I am a bit confused; please tell me again what you are looking f
 repeat() : "Could you please repeat that?";
 bye() : "Thank you, goodbye.";
 
-inform(url=$X) : "My current resume is here: $X";
+inform(name=$X) : "My current resume is here: $X";
 
