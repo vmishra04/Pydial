@@ -167,7 +167,7 @@ def getTopBelief(slot_belief):
     '''
 
     top_value = max(slot_belief, key=slot_belief.get)
-    logger.info(topvalue)
+    logger.info(top_value)
     return top_value, slot_belief[top_value]
 
 
