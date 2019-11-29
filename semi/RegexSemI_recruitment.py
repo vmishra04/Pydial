@@ -244,7 +244,13 @@ class RegexSemI_recruitment(RegexSemI.RegexSemI):
         # SLOT: food
         slot = 'linkedin'
         # {u'moderate': '(moderate)', u'budget': '(budget)', u'expensive': '(expensive)'}
-        self.slot_values[slot]['blah'] = "(linkedin)"
+        self.slot_values[slot]['blah'] = "(linkedin|LinkedIn|linkedIN)"
+        slot = 'phone'
+        # {u'moderate': '(moderate)', u'budget': '(budget)', u'expensive': '(expensive)'}
+        self.slot_values[slot]['blah'] = "(phone|number)"
+        slot = 'salary'
+        # {u'moderate': '(moderate)', u'budget': '(budget)', u'expensive': '(expensive)'}
+        self.slot_values[slot]['blah'] = "(salary|offer|offered|negotiable)"
         #---------------------------------------------------------------------------------------------------
 
 #END OF FILE
