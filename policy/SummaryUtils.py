@@ -182,6 +182,7 @@ def getTopBeliefs(belief, threshold='auto', domainString=None):
     top_beliefs = {}
     logger.info(belief)
     for slot in Ontology.global_ontology.get_system_requestable_slots(domainString):
+        logger.info(slot)
         if threshold == 'auto':
             numvalues = Ontology.global_ontology.get_len_informable_slot(domainString, slot)
             thres = 1. / (float(numvalues) - 0.1)
