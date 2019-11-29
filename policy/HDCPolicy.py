@@ -212,14 +212,18 @@ class HDCPolicy(Policy.Policy):
             logger.debug('Is there only one matching entity? %s.' % str(second))
             logger.debug('Can we discriminate more? %s.' % str(discr))
             requested_slots = SummaryUtils.getRequestedSlots(belief)
+            
+            if count80_logic:
 
-            if len(requested_slots) > 0 and offer_happened:
-                logger.debug('Getting inform requested action.')
-                logger.debug(belief)
-                act = PolicyUtils.getGlobalAction(belief, 'INFORM_REQUESTED', domainString=self.domainString)
+                if len(requested_slots) > 0 and offer_happened:
+                    logger.debug('Getting inform requested action.')
+                    logger.debug(belief)
+                    act = PolicyUtils.getGlobalAction(belief, 'INFORM_REQUESTED', domainString=self.domainString)
+                else:
+                    logger.debug('Getting inform exact action with %d accepted slots.' % count80)
+                    act = PolicyUtils.getInformAction(count80, belief, domainString=self.domainString)
             else:
-                logger.debug('Getting inform exact action with %d accepted slots.' % count80)
-                act = PolicyUtils.getInformAction(count80, belief, domainString=self.domainString)
+                return False, act
 
         if act != 'null()':
             return True, act
