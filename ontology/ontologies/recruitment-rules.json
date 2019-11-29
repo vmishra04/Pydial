@@ -14,9 +14,9 @@
     ], 
     "informable": {"url":["http://myresume.com"],
                     "email":["abc@gmail.com"],
-                    "linkedin":["somevale"],
-                    "phone":["somenumber"],
-                    "salary":["somesal"]
+                    "linkedin":["blah"],
+                    "phone":["blah"],
+                    "salary":["blah"]
                 }, 
     "method": [
         "none", 
