@@ -193,6 +193,7 @@ def getTopBeliefs(belief, threshold='auto', domainString=None):
         topvalue, topbelief = getTopBelief(belief['beliefs'][slot])
         logger.info(topvalue)
         logger.info(topbelief)
+        logger.info(thres)
 
         if topvalue != '**NONE**' and topbelief > thres:
             top_beliefs[slot] = (topvalue, topbelief)
