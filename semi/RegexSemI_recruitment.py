@@ -223,7 +223,8 @@ class RegexSemI_recruitment(RegexSemI.RegexSemI):
         #FIXME: 
         #---------------------------------------------------------------------------------------------------
         # TYPE:
-       
+        self.inform_type_regex = r"(recruitment|offer|opportunity)"
+        # SLOT: area 
         # SLOT: food
         slot = 'linkedin'
         # {u'moderate': '(moderate)', u'budget': '(budget)', u'expensive': '(expensive)'}
