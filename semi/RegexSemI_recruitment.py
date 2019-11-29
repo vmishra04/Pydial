@@ -95,9 +95,6 @@ class RegexSemI_recruitment(RegexSemI.RegexSemI):
         # FIXME:  Handcrafted extra rules as required on a slot to slot basis:
         self.request_regex["url"] += "|(url)"
         self.request_regex["email"] += "|(email)"
-        self.request_regex["linkedin"] += "|(linkedin)"
-        self.request_regex["phone"] += "|(phone)"
-        self.request_regex["salary"] += "|(salary)"
 
     def _set_inform_regex(self):
         """
