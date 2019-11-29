@@ -141,8 +141,8 @@ class RegexSemI(SemI):
         self._decode_repeat(obs)
         self._decode_reqalts(obs)
         self._decode_bye(obs)
-        self._decode_open(obs)
-        self._decode_notopen(obs)
+        #self._decode_open(obs)
+        #self._decode_notopen(obs)
         self._decode_type(obs)
         # probably need to then do some cleaning on acts in semanticActs
         self.clean(sys_act)
