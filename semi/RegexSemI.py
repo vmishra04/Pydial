@@ -155,8 +155,6 @@ class RegexSemI(SemI):
         self.rNEG =  "(\b|^|\ )(no\b|wrong|incorrect|error)|not\ (true|correct|right)\s" 
         self.rAFFIRM = "(yes|yeah|(\b|^)ok\b|(\b|^)OK\b|okay|sure|(that('?s| is) )?(?<!not\ )(?<!no\ )(right|correct|confirm))" 
         self.rBYE = "(\b|^|\ )(bye|goodbye|that'?s?\ (is\ )*all)(\s|$|\ |\.)"
-        self.rOPEN = "(open|opened)"
-        self.rNOTOPEN = "(trust|not)"
         self.GREAT = "(great|good|awesome)"
         self.HELPFUL = "(that((\')?s|\ (is|was))\ (very\ )?helpful)"
         self.THANK = "(thank(s|\ you)(\ (very|so)\ much)?)"
@@ -234,18 +232,19 @@ class RegexSemI(SemI):
             self.semanticActs.append('bye()')
 #         elif self._check(re.search(self.rTHANKS,obs,re.I)):
 #             self.semanticActs.append('bye()')
-
-    def _decode_open(self, obs):
-        """
-        """
-        if self._check(re.search(self.rOPEN,obs, re.I)): #DEL is not None:
-            self.semanticActs.append('open()')
-
-    def _decode_notopen(self, obs):
-        """
-        """
-        if self._check(re.search(self.rNOTOPEN,obs, re.I)): #DEL is not None:
-            self.semanticActs.append('notopen()')
+##
+##    def _decode_open(self, obs):
+##        """
+##        """
+##        if self._check(re.search(self.rOPEN,obs, re.I)): #DEL is not None:
+##            self.semanticActs.append('open()')
+##
+##    def _decode_notopen(self, obs):
+##        """
+##        """
+##        if self._check(re.search(self.rNOTOPEN,obs, re.I)): #DEL is not None:
+##            self.semanticActs.append('notopen()')
+            
 
     def _decode_reqalts(self,obs):
         """
