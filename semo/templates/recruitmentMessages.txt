@@ -1,0 +1,40 @@
+#NLG message generation rules
+# Last modified by JS on June 06, 2006
+
+# This file consists of two parts:
+
+# The first section is a list of rules defining system prompts for dialogue acts.
+# You can use $A, $B, $C as variables for slot names and $U, $V, $W, $X, $Y, $Z as variables for value names.
+# You can use vertical bars "|" to define several messages for the same dialogue act.
+
+# The second section contains a list of venues and locations. You can copy and paste this part from JVrules.txt.
+# Just add an asterisk "*" to all venue and location names that require the article "the" in sentences
+# like "I can recommend X"
+
+
+
+
+%url_inf($url) {
+  url : "The URL of the link is $url";  
+}
+
+%email_inf($email) {
+  url : "The link has been sent to your $email address";  
+}
+
+%purpose_inf($purpose) {
+  url : "The purpose of the link is for $purpose";  
+}
+
+# --------------- RULES --------------------------
+
+hello() : "Hello, yes please I'm interested?";
+
+null() : "Sorry I am a bit confused; please tell me again what you are looking for.";
+repeat() : "Could you please repeat that?";
+bye() : "Thank you, goodbye.";
+open(): "Great, can you send a postcard along with $100 dollars to the address in the link";
+notopen(): "I'm disappointed you don't trust the link, maybe next time";
+
+inform(url=$X) : "My current resume is here: $X";
+

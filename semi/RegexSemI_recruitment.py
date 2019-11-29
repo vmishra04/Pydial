@@ -50,7 +50,7 @@ class RegexSemI_link(RegexSemI.RegexSemI):
     """
     def __init__(self, repoIn=None):
         RegexSemI.RegexSemI.__init__(self)  #better than super() here - wont need to be changed for other domains
-        self.domainTag = "link"  #FIXME
+        self.domainTag = "recruitment"  #FIXME
         self.create_domain_dependent_regex() 
 
     def create_domain_dependent_regex(self):
@@ -68,11 +68,9 @@ class RegexSemI_link(RegexSemI.RegexSemI):
         # FIXME: define slot specific language -  for requests
         #---------------------------------------------------------------------------------------------------
         self.slot_vocab["url"] = "(url)" 
-        self.slot_vocab["linkedin"] = "(linkedin)" 
-        self.slot_vocab["phone"] = "(phone)" 
-        self.slot_vocab["salary"] = "(salary)" 
         self.slot_vocab["email"] = "(email|mail)(\ ?range)*" 
-        self.slot_vocab["purpose"] = "(purpose|meaning)" 
+        self.slot_vocab["purpose"] = "(purpose|meaning)"
+        self.slot_vocab["phone"] = "(phone(\ number)*|number|phone)"
         
         #---------------------------------------------------------------------------------------------------
         # Generate regular expressions for requests:
@@ -95,11 +93,11 @@ class RegexSemI_link(RegexSemI.RegexSemI):
 
         # FIXME:  Handcrafted extra rules as required on a slot to slot basis:
         self.request_regex["url"] += "|(url)"
-        self.request_regex["linkedin"] += "|(url)"
-        self.request_regex["phone"] += "|(phone)"
-        self.request_regex["salary"] += "|(salary)"
         self.request_regex["email"] += "|(email)"
         self.request_regex["purpose"] += "|(purpose)"
+        self.request_regex["linkedin"] += "|(purpose)"
+        self.request_regex["phone"] += "|(phone)"
+        self.request_regex["salary"] += "|(salary)"
 
     def _set_inform_regex(self):
         """
@@ -135,21 +133,6 @@ class RegexSemI_link(RegexSemI.RegexSemI):
                 self.inform_regex[slot]['dontcare'] += r"|any(\ ?where)(\ is\ (fine|ok\b|good|okay))?"
                 
             if slot == "url":
-                slot_term = r"(the\ )*"+slot
-                self.inform_regex[slot]['dontcare'] = dontcare+slot_term
-                self.inform_regex[slot]['dontcare'] += r"|" + slot_term + nomatter
-                
-            if slot == "linkedin":
-                slot_term = r"(the\ )*"+slot
-                self.inform_regex[slot]['dontcare'] = dontcare+slot_term
-                self.inform_regex[slot]['dontcare'] += r"|" + slot_term + nomatter
-                
-            if slot == "phone":
-                slot_term = r"(the\ )*"+slot
-                self.inform_regex[slot]['dontcare'] = dontcare+slot_term
-                self.inform_regex[slot]['dontcare'] += r"|" + slot_term + nomatter
-                
-            if slot == "salary":
                 slot_term = r"(the\ )*"+slot
                 self.inform_regex[slot]['dontcare'] = dontcare+slot_term
                 self.inform_regex[slot]['dontcare'] += r"|" + slot_term + nomatter

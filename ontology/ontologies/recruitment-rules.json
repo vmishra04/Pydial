@@ -1,0 +1,29 @@
+{
+    "binary": [], 
+    "discourseAct": [
+        "ack", 
+        "hello", 
+        "none", 
+        "repeat", 
+        "silence", 
+        "thankyou",
+        "open",
+        "resend",
+        "notopen",
+        "interested"
+    ], 
+    "informable": {"url":["http://myresume.com"],
+                    "email":["abc@gmail.com"]
+                }, 
+    "method": [
+        "none", 
+        "byconstraints", 
+        "byname", 
+        "finished", 
+        "byalternatives", 
+        "restart"
+    ], 
+    "requestable": ["url","email"], 
+    "system_requestable": ["linkedin","phone","salary"], 
+    "type": "recruitment"
+}
