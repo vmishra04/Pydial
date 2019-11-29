@@ -180,6 +180,7 @@ def getTopBeliefs(belief, threshold='auto', domainString=None):
     :return: (dict) as {slot: (topvalue, topbelief), ...}
     '''
     top_beliefs = {}
+    logger.info(top_beliefs)
     for slot in Ontology.global_ontology.get_system_requestable_slots(domainString):
         if threshold == 'auto':
             numvalues = Ontology.global_ontology.get_len_informable_slot(domainString, slot)
