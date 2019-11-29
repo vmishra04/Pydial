@@ -26,7 +26,7 @@
         "byalternatives", 
         "restart"
     ], 
-    "requestable": ["url","email"], 
+    "requestable": ["url","email","linkedin","phone","salary"], 
     "system_requestable": ["linkedin","phone","salary"], 
     "type": "recruitment"
 }
