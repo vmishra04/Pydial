@@ -242,6 +242,9 @@ class RegexSemI_recruitment(RegexSemI.RegexSemI):
         self.slot_values[slot]['expensive'] = "(to\ be\ |any\ )*(expensive|expensively|dear|costly|pricey)"
 #         self.slot_values[slot]['dontcare'] = "any\ (price|price(\ |-)*range)"
         # SLOT: food
+        slot = 'linkedin'
+        # {u'moderate': '(moderate)', u'budget': '(budget)', u'expensive': '(expensive)'}
+        self.slot_values[slot]['blah'] = "(linkedin)"
         #---------------------------------------------------------------------------------------------------
 
 #END OF FILE
