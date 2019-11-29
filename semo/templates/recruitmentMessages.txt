@@ -33,8 +33,6 @@ hello() : "Hello, yes please I'm interested?";
 null() : "Sorry I am a bit confused; please tell me again what you are looking for.";
 repeat() : "Could you please repeat that?";
 bye() : "Thank you, goodbye.";
-open(): "Great, can you send a postcard along with $100 dollars to the address in the link";
-notopen(): "I'm disappointed you don't trust the link, maybe next time";
 
 inform(url=$X) : "My current resume is here: $X";
 

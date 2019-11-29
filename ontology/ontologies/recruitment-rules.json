@@ -13,7 +13,10 @@
         "interested"
     ], 
     "informable": {"url":["http://myresume.com"],
-                    "email":["abc@gmail.com"]
+                    "email":["abc@gmail.com"],
+                    "linkedin":[""],
+                    "phone":[""],
+                    "salary":[""]
                 }, 
     "method": [
         "none", 
