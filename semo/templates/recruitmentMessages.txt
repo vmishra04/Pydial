@@ -34,5 +34,10 @@ null() : "Sorry I am a bit confused; please tell me again what you are looking f
 repeat() : "Could you please repeat that?";
 bye() : "Thank you, goodbye.";
 
+
+request(linkedin) : "What's your LinkedIn account name so I can DM you?";
+request(phone) : "Sorry, I can't seem reach you there. Would you happen to have a US phone number?";
+request(salary) : "Could you also tell me typical salary for this job";
+
 inform(name=$X) : "My current resume is here: $X";
 
