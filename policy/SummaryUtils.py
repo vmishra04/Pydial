@@ -92,6 +92,7 @@ def globalSummary(belief, domainString):
 
     summaryArray = dict.fromkeys(global_summary_features, False)
     summaryArray['GLOBAL_COUNTACCEPTED'] = len(getTopBeliefs(belief, domainString=domainString))
+    logger.info( summaryArray['GLOBAL_COUNTACCEPTED'])
     summaryArray['GLOBAL_NAMENONE'] = belief['features']['lastActionInformNone']
     summaryArray['GLOBAL_OFFERHAPPENED'] = belief['features']['offerHappened']
 
@@ -166,7 +167,6 @@ def getTopBelief(slot_belief):
     '''
 
     top_value = max(slot_belief, key=slot_belief.get)
-    logger.info("top belief"+str(top_value))
     return top_value, slot_belief[top_value]
 
 
@@ -191,6 +191,8 @@ def getTopBeliefs(belief, threshold='auto', domainString=None):
 
         if topvalue != '**NONE**' and topbelief > thres:
             top_beliefs[slot] = (topvalue, topbelief)
+            
+    logger.info(top_beliefs)
 
     return top_beliefs
 
