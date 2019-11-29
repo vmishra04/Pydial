@@ -223,24 +223,7 @@ class RegexSemI_recruitment(RegexSemI.RegexSemI):
         #FIXME: 
         #---------------------------------------------------------------------------------------------------
         # TYPE:
-        self.inform_type_regex = r"(restaurant|cafe|(want|looking for) food|(place|some(thing|where)) to eat)"
-        # SLOT: area 
-        slot = 'url'
-        # {u'west': '(west)', u'east': '(east)', u'north': '(north)', u'south': '(south)', u'centre': '(centre)'}
-        self.slot_values[slot]['north'] = "((the)\ )*(north|kings\ hedges|arbury|chesterton)"
-        self.slot_values[slot]['east'] = "((the)\ )*(east|castle|newnham)"
-        self.slot_values[slot]['west'] = "((the)\ )*(west|abbey|romsey|cherry hinton)"
-        self.slot_values[slot]['south'] = "((the)\ )*(south|trumpington|queen ediths|coleridge)"
-        self.slot_values[slot]['centre'] = "((the)\ )*(centre|center|downtown|central|market)"  # lmr46, added rule for detecting the center
-#         self.slot_values[slot]['dontcare'] = "any(\ )*(area|location|place|where)"    
-        # SLOT: pricerange
-        slot = 'email'
-        # {u'moderate': '(moderate)', u'budget': '(budget)', u'expensive': '(expensive)'}
-        self.slot_values[slot]['moderate'] = "(to\ be\ |any\ )*(moderat|moderate|moderately\ priced|mid|middle|average)"
-        self.slot_values[slot]['moderate']+="(?!(\ )*weight)"
-        self.slot_values[slot]['cheap'] = "(to\ be\ |any\ )*(budget|cheap|bargin|bargain|inexpensive|cheapest|low\ cost)"
-        self.slot_values[slot]['expensive'] = "(to\ be\ |any\ )*(expensive|expensively|dear|costly|pricey)"
-#         self.slot_values[slot]['dontcare'] = "any\ (price|price(\ |-)*range)"
+       
         # SLOT: food
         slot = 'linkedin'
         # {u'moderate': '(moderate)', u'budget': '(budget)', u'expensive': '(expensive)'}
